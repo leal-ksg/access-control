@@ -1,6 +1,6 @@
 ## Título do Projeto:
 
-?
+Armarduino (provisório)
 
 ## Período:
 
@@ -14,7 +14,9 @@ O sistema deverá permitir o gerenciamento dos usuários e de suas respectivas p
 
 ## Justificativa:
 
-A demanda surgiu a partir da necessidade de aumentar a segurança e melhorar o controle de acesso aos armários utilizados no PIPA IFmakeRS. Atualmente, a ausência de um mecanismo informatizado de controle pode dificultar o gerenciamento e rastreabilidade acerca de quem possui autorização para acessar determinados armários, além de limitar a possibilidade de estabelecer diferentes níveis de permissão. Atualmente, os acessos são feitos de forma manual e física, com uso de chave. Entretanto, muitas vezes percebe-se que os armários ficam desbloqueados a fim de facilitar o uso diário dos equipamentos guardados.
+A demanda surgiu a partir da necessidade de aumentar a segurança e melhorar o controle de acesso aos armários utilizados no PIPA IFmakeRS. Atualmente, a ausência de um mecanismo informatizado de controle pode dificultar o gerenciamento e rastreabilidade acerca de quem possui autorização para acessar determinados armários, além de limitar a possibilidade de estabelecer diferentes níveis de permissão.
+
+Hoje, o acesso aos armários é realizado de forma manual, por meio de chaves. Entretanto, observa-se que, em algumas situações, os armários permanecem desbloqueados para facilitar o acesso e o uso diário dos equipamentos armazenados, o que pode comprometer a segurança e o controle de acesso aos compartimentos
 
 A área envolvida compreende o gerenciamento e controle de acesso físico, associado ao desenvolvimento de sistemas e à automação por meio de dispositivos eletrônicos. O sistema será utilizado principalmente pelos responsáveis pelo PIPA, que poderão administrar usuários e permissões, e pelos usuários autorizados a utilizar os armários.
 
