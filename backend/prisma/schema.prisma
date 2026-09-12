@@ -73,7 +73,7 @@ model LockerPermission {
   user   User   @relation(fields: [userId], references: [id])
 
   createdAt DateTime @default(now())
-  expiresAt DateTime @default(now())
+  expiresAt DateTime?
 
   @@id([lockerId, userId])
 }
