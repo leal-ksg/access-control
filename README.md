@@ -6,18 +6,37 @@
 
 ### Backend
 - Crie um usuário no PostgreSQL para o projeto
-    - Importante mudar a senha no comando abaixo
+    - Entre no PostgreSQL:
+        ```bash
+        sudo -iu postgres psql
+        ```
+    - Crie o usuário e permita que ele crie bancos de dados:
+        ```bash
+        create user access_control with password 'mude_esta_senha';
+        alter user access_control createdb;
+        \q
+        ```
+    - Importante: altere "mude_esta_senha" para uma senha segura
+- Configure o arquivo `.env`:
     ```bash
-    sudo -iu postgres psql
+    cp ./backend/.env.example ./backend/.env
     ```
+    - Edite o arquivo, utilizando a mesma senha anterior
+- Instale as dependências:
     ```bash
-    create user access_control with password 'mude_esta_senha';
-    create database access_control owner access_control;
-    \q
+    cd backend && npm i
     ```
-- Crie um arquivo `.env`:
-    - Utilize a mesma senha anterior
+- Gere o Prisma Client:
     ```bash
-    echo DATABASE_URL="postgresql://access_control:SUA_SENHA@localhost:5432/access_control" > ./.env
+    npx prisma generate
     ```
-    
+- Execute as migrations do banco:
+    ```bash
+    npx prisma migrate dev
+    ```
+
+## Execução
+- Inicie o backend em modo de desenvolvimento:
+    ```bash
+    cd backend && npm run dev
+    ```
