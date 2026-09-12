@@ -19,7 +19,7 @@ mqttClient.on("connect", () => {
 });
 
 mqttClient.on("error", (err) => {
-  console.log("-Erro no Broker MQTT:", err);
+  console.log("- Erro no Broker MQTT:", err);
 });
 
 mqttClient.on("message", (topic, message) => {

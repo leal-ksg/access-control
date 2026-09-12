@@ -7,19 +7,93 @@ datasource db {
   provider = "postgresql"
 }
 
-enum Role {
+enum UserRole {
   ADMIN
   TEACHER
   STUDENT
 }
 
+enum DoorState {
+  OPEN
+  CLOSED
+}
+
+enum EventSeverity {
+  INFO
+  WARNING
+  ERROR
+}
+
 model User {
-  id        String     @id @default(uuid()) @db.Uuid
+  id        String   @id @default(cuid())
   name      String
   surname   String
-  email     String     @unique
+  email     String   @unique
   password  String
-  active    Boolean    @default(true)
-  createdAt DateTime   @default(now())
-  role      Role       @default(STUDENT)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  role      UserRole @default(STUDENT)
+
+  permissions LockerPermission[]
+  events      Event[]
+}
+
+model Device {
+  id         String   @id @default(cuid())
+  deviceHash String   @unique
+  macAddress String   @unique
+  isOnline   Boolean  @default(false)
+  lastSeen   DateTime @default(now())
+  createdAt  DateTime @default(now())
+
+  locker Locker?
+  events Event[]
+}
+
+model Locker {
+  id       String @id @default(cuid())
+  name     String
+  location String
+
+  deviceId String? @unique
+  device   Device? @relation(fields: [deviceId], references: [id])
+
+  doorState DoorState @default(CLOSED)
+  createdAt DateTime  @default(now())
+
+  permissions LockerPermission[]
+  events      Event[]
+}
+
+model LockerPermission {
+  lockerId String
+  locker   Locker @relation(fields: [lockerId], references: [id])
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  expiresAt DateTime @default(now())
+
+  @@id([lockerId, userId])
+}
+
+model Event {
+  id            String        @id @default(cuid())
+  correlationId String?
+  type          String
+  severity      EventSeverity @default(INFO)
+  message       String?
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  lockerId String?
+  locker   Locker? @relation(fields: [lockerId], references: [id], onDelete: SetNull)
+
+  deviceId String?
+  device   Device? @relation(fields: [deviceId], references: [id], onDelete: SetNull)
+
+  metadata  Json?
+  createdAt DateTime @default(now())
 }
