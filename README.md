@@ -35,8 +35,22 @@
     npx prisma migrate dev
     ```
 
+### Frontend
+- Instale as dependências:
+    ```bash
+    cd ./frontend && npm i
+    ```
+
 ## Execução
 - Inicie o backend em modo de desenvolvimento:
     ```bash
     cd backend && npm run dev
+    ```
+- Inicie o frontend em modo de desenvolvimento:
+    ```bash
+    cd frontend && npm run dev
+    ```
+- Execute backend e frontend com Linux + [tmux](https://github.com/tmux/tmux/wiki):
+    ```bash
+    ./start.sh
     ```
