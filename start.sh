@@ -6,7 +6,7 @@ tmux send-keys -t dev:backend "cd backend && npm run dev" C-m
 
 # frontend
 tmux new-window -t dev:1 -n frontend
-tmux sned-keys -t dev:frontend "cd frontend && npm run dev" C-m
+tmux send-keys -t dev:frontend "cd frontend && npm run dev" C-m
 
 # recover terminal
 tmux attach-session -t dev

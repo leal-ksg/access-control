@@ -50,7 +50,8 @@
     ```bash
     cd frontend && npm run dev
     ```
-- Execute backend e frontend com Linux + [tmux](https://github.com/tmux/tmux/wiki):
+- Alternativa: execute ambos com Linux + [tmux](https://github.com/tmux/tmux/wiki):
     ```bash
+    chmod +x ./start.sh
     ./start.sh
     ```
