@@ -2,6 +2,8 @@ import { ButtonHTMLAttributes } from "react";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "solid" | "outline";
+  fullWidth?: boolean;
+  justify?: "center" | "between";
 }
 
 const variantStyles = {
@@ -9,10 +11,24 @@ const variantStyles = {
   outline: "border border-slate-300 text-slate-900 hover:bg-slate-50",
 };
 
-export function Button({ variant = "solid", className = "", children, ...props }: ButtonProps) {
+const justifyStyles = {
+  center: "justify-center",
+  between: "justify-between",
+};
+
+export function Button({
+  variant = "solid",
+  fullWidth = true,
+  justify = "center",
+  className = "",
+  children,
+  ...props
+}: ButtonProps) {
   return (
     <button
-      className={`w-full rounded-full py-3.5 text-sm font-semibold transition ${variantStyles[variant]} ${className}`}
+      className={`inline-flex items-center gap-2 rounded-full py-3.5 px-6 text-sm font-semibold transition ${
+        fullWidth ? "w-full" : ""
+      } ${justifyStyles[justify]} ${variantStyles[variant]} ${className}`}
       {...props}
     >
       {children}
