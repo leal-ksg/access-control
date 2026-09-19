@@ -53,6 +53,16 @@ export async function updateLocker(
         "O dispositivo escolhido já está vinculado em outro armário",
       );
     }
+
+    const deviceExists = await prisma.device.findFirst({
+      where: {
+        id: data.deviceId,
+      },
+    });
+
+    if (!deviceExists) {
+      throw new HttpError("O dispositivo associado ao armário não existe");
+    }
   }
 
   await prisma.locker.update({

@@ -1,0 +1,287 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "ACCESS CONTROL",
+    "version": "1.0.0",
+    "description": "API para gerenciamento de usuários e armários inteligentes com ESP32 via MQTT"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Servidor de Desenvolvimento"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "Insira o token JWT no formato: Bearer <seu_token_aqui>"
+      }
+    }
+  },
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ],
+  "paths": {
+    "/api/v1/users": {
+      "get": {
+        "summary": "Get all users",
+        "tags": ["Users"],
+        "responses": {
+          "200": {
+            "description": "Lista de usuários retornada com sucesso."
+          },
+          "401": {
+            "description": "Não autorizado (Token inválido ou não fornecido)."
+          }
+        }
+      },
+      "post": {
+        "summary": "Create user",
+        "tags": ["Users"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "surname", "email", "password"],
+                "properties": {
+                  "name": { "type": "string" },
+                  "surname": { "type": "string" },
+                  "email": { "type": "string", "format": "email" },
+                  "password": { "type": "string" },
+                  "role": {
+                    "type": "string",
+                    "enum": ["ADMIN", "TEACHER", "STUDENT"],
+                    "default": "STUDENT"
+                  }
+                }
+              },
+              "example": {
+                "name": "Usuário",
+                "surname": "De Teste",
+                "email": "test_user@gmail.com",
+                "password": "supersecretpassword",
+                "role": "ADMIN"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usuário criado com sucesso."
+          },
+          "400": {
+            "description": "Falha na validação dos campos pelo Zod."
+          }
+        }
+      }
+    },
+    "/api/v1/users/{userId}": {
+      "patch": {
+        "summary": "Update user",
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "description": "O ID exclusivo (CUID2) do usuário que deseja alterar",
+            "schema": {
+              "type": "string",
+              "example": "clh123456000008mn"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "surname": { "type": "string" },
+                  "email": { "type": "string", "format": "email" },
+                  "role": {
+                    "type": "string",
+                    "enum": ["ADMIN", "TEACHER", "STUDENT"]
+                  }
+                }
+              },
+              "example": {
+                "name": "Usuário Novo",
+                "surname": "Atualizado"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Usuário atualizado com sucesso."
+          },
+          "404": {
+            "description": "Usuário não encontrado."
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete user",
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "description": "O ID exclusivo (CUID2) do usuário que deseja remover",
+            "schema": {
+              "type": "string",
+              "example": "clh123456000008mn"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Usuário deletado/inativado com sucesso (Sem corpo de retorno)."
+          },
+          "404": {
+            "description": "Usuário não encontrado."
+          }
+        }
+      }
+    },
+    "/api/v1/lockers": {
+      "get": {
+        "summary": "Get all lockers",
+        "tags": ["Lockers"],
+        "responses": {
+          "200": {
+            "description": "Lista de armários inteligentes retornada com sucesso."
+          }
+        }
+      },
+      "post": {
+        "summary": "Create locker",
+        "tags": ["Lockers"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "location"],
+                "properties": {
+                  "name": { "type": "string" },
+                  "location": { "type": "string" },
+                  "deviceId": { "type": "string", "nullable": true }
+                }
+              },
+              "example": {
+                "name": "Armário 10 - Corredor Central",
+                "location": "Bloco B - Vestiário",
+                "deviceId": "clh98765400000abc"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Armário criado com sucesso."
+          }
+        }
+      }
+    },
+    "/api/v1/lockers/{lockerId}": {
+      "patch": {
+        "summary": "Update locker (or bind Device)",
+        "tags": ["Lockers"],
+        "parameters": [
+          {
+            "name": "lockerId",
+            "in": "path",
+            "required": true,
+            "description": "O ID exclusivo (CUID2) do armário que deseja alterar",
+            "schema": {
+              "type": "string",
+              "example": "clh78912300000xyz"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "location": { "type": "string" },
+                  "deviceId": {
+                    "type": "string",
+                    "nullable": true,
+                    "description": "ID do dispositivo físico para vincular (ou null para desvincular)"
+                  }
+                }
+              },
+              "example": {
+                "deviceId": "clh98765400000abc"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Armário atualizado com sucesso."
+          },
+          "400": {
+            "description": "Dispositivo já está vinculado a outro armário ativo."
+          },
+          "404": {
+            "description": "Armário ou Dispositivo não encontrado."
+          }
+        }
+      }
+    },
+    "/api/v1/lockers/{lockerId}/unlock": {
+      "post": {
+        "summary": "Unlock locker physically",
+        "description": "Valida permissões no banco e despacha comando assíncrono via MQTT para o ESP32 abrir o armário físico.",
+        "tags": ["Lockers"],
+        "parameters": [
+          {
+            "name": "lockerId",
+            "in": "path",
+            "required": true,
+            "description": "O ID exclusivo (CUID2) do armário que deseja destrancar",
+            "schema": {
+              "type": "string",
+              "example": "clh78912300000xyz"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Comando de abertura despachado com sucesso para a fila MQTT.",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "400": {
+            "description": "O dispositivo físico está offline ou sua permissão de acesso expirou."
+          },
+          "401": {
+            "description": "Não autorizado (Token de usuário ausente ou inválido)."
+          },
+          "404": {
+            "description": "Armário ou Dispositivo não cadastrados."
+          }
+        }
+      }
+    }
+  }
+}

@@ -6,10 +6,6 @@ const options: IClientOptions = {
   password: process.env.MQTT_BROKER_PASSWORD || "dev_mqtt_password",
 };
 
-console.log(process.env.MQTT_BROKER_USERNAME);
-console.log(process.env.MQTT_BROKER_PASSWORD);
-console.log(process.env.MQTT_BROKER_URL);
-
 const mqttClient = mqtt.connect(brokerUrl, options);
 
 mqttClient.on("connect", () => {
