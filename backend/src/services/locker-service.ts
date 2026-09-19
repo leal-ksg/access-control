@@ -1,4 +1,3 @@
-import { gt } from "zod";
 import { HttpError } from "../core/http-error";
 import { prisma } from "../database/prisma";
 import { EventSeverity, Locker } from "../generated/prisma/client";
