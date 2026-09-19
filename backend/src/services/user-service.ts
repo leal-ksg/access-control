@@ -2,6 +2,7 @@ import { HttpError } from "../core/http-error";
 import { prisma } from "../database/prisma";
 import { User } from "../generated/prisma/client";
 import { CreateUserDTO } from "../types/user";
+import bcrypt from "bcrypt";
 
 export async function getUserById(id: string): Promise<User | null> {
   const user = await prisma.user.findUnique({
@@ -30,7 +31,13 @@ export async function createUser(data: CreateUserDTO): Promise<User> {
     throw new HttpError("Já existe um usuário com esse e-mail", 409);
   }
 
-  const newUser = await prisma.user.create({ data });
+  const hash = await bcrypt.hash(data.password, 10);
+  const newUser = await prisma.user.create({
+    data: {
+      ...data,
+      password: hash,
+    },
+  });
 
   return newUser;
 }
@@ -48,6 +55,14 @@ export async function updateUser(
   id: string,
   data: Omit<Partial<User>, "id">,
 ): Promise<void> {
+  let updateUser = data;
+
+  if ("password" in data) {
+    const { password, ...rest } = data;
+    const hash = await bcrypt.hash(password, 10);
+    updateUser = { password: hash, ...rest };
+  }
+
   await prisma.user.update({
     data,
     where: {

@@ -5,16 +5,13 @@ import { createUserSchema, updateUserSchema } from "../schemas/user";
 
 export const userRouter = Router();
 
-userRouter.get("/", UserController.getUsers);
-userRouter.get("/:id", UserController.getUserById);
-userRouter.post(
-  "/:id",
-  validationMiddleware(createUserSchema),
-  UserController.createUser,
-);
-userRouter.patch(
-  "/:id",
-  validationMiddleware(updateUserSchema),
-  UserController.updateUser,
-);
-userRouter.delete("/:id", UserController.deleteUser);
+userRouter
+  .get("/", UserController.getUsers)
+  .get("/:id", UserController.getUserById)
+  .post("/", validationMiddleware(createUserSchema), UserController.createUser)
+  .patch(
+    "/:id",
+    validationMiddleware(updateUserSchema),
+    UserController.updateUser,
+  )
+  .delete("/:id", UserController.deleteUser);

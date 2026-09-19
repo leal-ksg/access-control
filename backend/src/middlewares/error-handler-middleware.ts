@@ -9,6 +9,7 @@ export function errorHandlerMiddleware (err: Error, req: Request, res: Response,
         })
     }
 
+    console.log(err)
     res.status(500).json({
         statusCode: 500,
         message: "Erro interno do servidor"

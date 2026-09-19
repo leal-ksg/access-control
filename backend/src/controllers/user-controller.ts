@@ -19,9 +19,10 @@ export async function getUserById(req: Request, res: Response) {
 }
 
 export async function createUser(req: Request, res: Response) {
-  const newUser = await userService.createUser(req.body);
+  const user = await userService.createUser(req.body);
 
-  return res.status(201).json(newUser);
+  const { password, ...userWithoutPassword } = user;
+  return res.status(201).json(userWithoutPassword);
 }
 
 export async function updateUser(req: Request, res: Response) {
