@@ -10,8 +10,8 @@
 
 // VERSÃO DA PROGRAMAÇÃO
 const String NomePrograma = "Access Control";
-const String Ver = "1-01.05";
-const String DataVer = "22/08/2026";
+const String Ver = "1-02.00";
+const String DataVer = "22/09/2026";
 
 ESP8266WebServer server(80);
 DNSServer dnsServer; 
@@ -29,8 +29,11 @@ char api_host[80] = "192.168.1.100"; // IP do Broker MQTT
 char api_port[6]  = "1883";          // Porta padrão MQTT
 char api_token[100] = "TOKEN_ID";
 char api_save[4]  = "60";
-char placa_hash[100] = "meu_hash_secreto_123"; // Campo para o hash da placa
-char mqtt_topic[100] = "sistema/portas/frente/cmd"; // Campo para o Tópico MQTT customizável
+char mqtt_topic[100] = "sistema/portas/frente/cmd"; // Tópico para receber comandos
+
+// Identificação automática do dispositivo (Hash e MAC)
+String deviceHash = "";
+String macAddressStr = "";
 
 // Controle de DHCP e IPs de Fallback
 bool usa_dhcp = true; 
@@ -69,6 +72,7 @@ void handleCaptivePortal();
 String gerarMenu();
 void callbackMQTT(char* topic, byte* payload, unsigned int length);
 void reconectarMQTT();
+void publicarStatusOnline();
 void acionarTrinco();
 
 //-----------------------------------------------------------------------------------------------------------------
@@ -80,9 +84,14 @@ void setup() {
   digitalWrite(RELAY_PIN, LOW); // Garante relé desligado
   digitalWrite(LED_PLACA, HIGH); 
 
-  autoconf_ssid = "ESP_AP-" + String(ESP.getChipId());
+  autoconf_ssid = "CONTROL_AP-" + String(ESP.getChipId());
 
-  Serial.printf("\nVersão: %s | Data: %s | MAC: %s \n", Ver.c_str(), DataVer.c_str(), WiFi.macAddress().c_str());
+  // Gera o Hash e MAC automático com base no ChipID do ESP8266
+  macAddressStr = WiFi.macAddress();
+  deviceHash = "AP_" + String(ESP.getChipId(), HEX);
+  deviceHash.toUpperCase();
+
+  Serial.printf("\nVersão: %s | Data: %s | Hash: %s | MAC: %s \n", Ver.c_str(), DataVer.c_str(), deviceHash.c_str(), macAddressStr.c_str());
 
   ElegantOTA.begin(&server);
   ArduinoOTA.begin();
@@ -185,19 +194,40 @@ void callbackMQTT(char* topic, byte* payload, unsigned int length) {
   String comando = doc["cmd"];
   String hashRecebido = doc["hash"];
 
-  // Valida se o hash confere com o configurado na placa
-  if (hashRecebido == String(placa_hash)) {
+  // Valida se o hash confere com o hash automático da placa
+  if (hashRecebido == deviceHash) {
     if (comando == "UNLOCK") {
       Serial.println(F("[MQTT] Hash válido! Abrindo porta via MQTT."));
       acionarTrinco();
       
-      // Publica status de feedback no mesmo tópico base + "/status"
+      // Publica status de feedback de porta aberta
       String topicoStatus = String(mqtt_topic);
       topicoStatus.replace("cmd", "status");
       mqttClient.publish(topicoStatus.c_str(), "PORT_OPENED");
     }
   } else {
     Serial.println(F("[MQTT] ALERTA: Tentativa de acesso com Hash inválido!"));
+  }
+}
+
+void publicarStatusOnline() {
+  // Monta o tópico dinâmico no formato solicitado
+  String topicoStatusLigar = "devices/" + deviceHash + "/status";
+  
+  // Monta o JSON formatado
+  DynamicJsonDocument doc(256);
+  doc["isOnline"] = true;
+  doc["deviceHash"] = deviceHash;
+  doc["macAddress"] = macAddressStr;
+
+  String payloadJson;
+  serializeJson(doc, payloadJson);
+
+  // Publica com retain=true para que sistemas externos saibam o estado atual mesmo conectando depois
+  if (mqttClient.publish(topicoStatusLigar.c_str(), payloadJson.c_str(), true)) {
+    Serial.printf("[MQTT] Status online publicado em: %s\n", topicoStatusLigar.c_str());
+  } else {
+    Serial.println(F("[MQTT] Falha ao publicar status online."));
   }
 }
 
@@ -208,11 +238,18 @@ void reconectarMQTT() {
     Serial.print(F("Tentando conexão MQTT..."));
     String clientId = "ESP8266Node-" + String(ESP.getChipId());
     
-    if (mqttClient.connect(clientId.c_str())) {
+    // Configura o LWT (Last Will) para avisar caso caia, opcionalmente, mas foca na conexão principal
+    String willTopic = "devices/" + deviceHash + "/status";
+    String willPayload = "{\"isOnline\":false,\"deviceHash\":\"" + deviceHash + "\",\"macAddress\":\"" + macAddressStr + "\"}";
+
+    if (mqttClient.connect(clientId.c_str(), NULL, NULL, willTopic.c_str(), 0, true, willPayload.c_str())) {
       Serial.println(F("conectado!"));
-      // Inscreve-se no tópico configurado na memória
+      // Inscreve-se no tópico de comando
       mqttClient.subscribe(mqtt_topic);
       Serial.printf("Inscrito no tópico: %s\n", mqtt_topic);
+      
+      // Publica o status online logo após conectar com sucesso
+      publicarStatusOnline();
     } else {
       Serial.printf("falha, rc=%d. Nova tentativa em 5s\n", mqttClient.state());
     }
@@ -292,9 +329,9 @@ void handleAbrirPortaLocal() {
 void handleConfig() {
   if (!verificarAutenticacao()) return; 
 
-  String info = F("<p>#Prog# Versão: #V# Data: #D#<br>ID: #ID#<br>Wi-Fi Conectado: #WF#<br>MAC: #MC#<br>IP Atual: #IP_ACT#</p>");
+  String info = F("<p>#Prog# Versão: #V# Data: #D#<br>ID: #ID#<br>Hash Automático: #HASH#<br>Wi-Fi Conectado: #WF#<br>MAC: #MC#<br>IP Atual: #IP_ACT#</p>");
   info.replace("#Prog#", NomePrograma); info.replace("#V#", Ver); info.replace("#D#", DataVer);
-  info.replace("#MC#", WiFi.macAddress()); info.replace("#ID#", autoconf_ssid); 
+  info.replace("#HASH#", deviceHash); info.replace("#MC#", macAddressStr); info.replace("#ID#", autoconf_ssid); 
   info.replace("#WF#", WiFi.SSID()); info.replace("#IP_ACT#", WiFi.localIP().toString());
 
   int n = WiFi.scanNetworks();
@@ -323,14 +360,13 @@ void handleConfig() {
   String dhcpChecked = usa_dhcp ? "checked" : "";
   html += "<tr><td>USAR DHCP:</td><td><input type='checkbox' id='dhcpCheck' name='dhcp' value='1' " + dhcpChecked + " onclick='toggleIPFields()' style='width:auto;'> <span style='font-size:11px; color:#555;'>Obter IP automaticamente</span></td></tr>";
 
-  html += F("<tr><th colspan='2' class=\"msg\">Configurações MQTT e Segurança</th></tr>");
+  html += F("<tr><th colspan='2' class=\"msg\">Configurações MQTT</th></tr>");
   auto addRow = [](String label, String name, String val, String idField) {
     return "<tr><td>" + label + ":</td><td><input type='text' id='" + idField + "' name='" + name + "' value='" + val + "'></td></tr>";
   };
   html += addRow("BROKER HOST", "api_host", api_host, "hostF"); 
   html += addRow("BROKER PORT", "api_port", api_port, "portF");
   html += addRow("TÓPICO MQTT", "mqtt_topic", mqtt_topic, "topF"); 
-  html += addRow("HASH DA PLACA", "placa_hash", placa_hash, "hashF"); 
   
   html += F("<tr><th colspan='2' class=\"msg\">Endereçamento IP (Caso IP Fixo)</th></tr>");
   html += addRow("IP ESTÁTICO", "staticIP", static_ip, "ipF"); 
@@ -388,7 +424,6 @@ void handleConfigSave() {
   strcpy(api_host, server.arg("api_host").c_str());
   strcpy(api_port, server.arg("api_port").c_str());
   strcpy(mqtt_topic, server.arg("mqtt_topic").c_str());
-  strcpy(placa_hash, server.arg("placa_hash").c_str());
 
   salvarConfigFS();
 
@@ -433,7 +468,6 @@ void carregarConfigFS() {
         if (json.containsKey("api_host")) strcpy(api_host, json["api_host"]);
         if (json.containsKey("api_port")) strcpy(api_port, json["api_port"]);
         if (json.containsKey("mqtt_topic")) strcpy(mqtt_topic, json["mqtt_topic"]);
-        if (json.containsKey("placa_hash")) strcpy(placa_hash, json["placa_hash"]);
         if (json.containsKey("dhcp")) usa_dhcp = json["dhcp"].as<bool>();
         
         if (json.containsKey("w_user")) strcpy(web_user, json["w_user"]);
@@ -455,7 +489,6 @@ void salvarConfigFS() {
   json["password"] = password;
   json["api_host"] = api_host; json["api_port"] = api_port;
   json["mqtt_topic"] = mqtt_topic;
-  json["placa_hash"] = placa_hash;
   json["dhcp"] = usa_dhcp; 
   json["ip"] = static_ip; json["gateway"] = static_gw;
   json["subnet"] = static_sn; json["dns"] = static_dns;
