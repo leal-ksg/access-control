@@ -282,6 +282,69 @@
           }
         }
       }
+    },
+    "/api/v1/devices/unlinked": {
+      "get": {
+        "summary": "Get all unlinked devices",
+        "description": "Retorna uma lista de todos os dispositivos físicos ativos no broker que não possuem nenhum armário vinculado no banco de dados.",
+        "tags": ["Devices"],
+        "responses": {
+          "200": {
+            "description": "Lista de dispositivos não vinculados retornada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "ID interno gerado pelo banco"
+                      },
+                      "deviceHash": {
+                        "type": "string",
+                        "description": "Hash de identificação único para a placa"
+                      },
+                      "macAddress": {
+                        "type": "string",
+                        "description": "Endereço físico MAC da placa"
+                      },
+                      "isOnline": {
+                        "type": "boolean",
+                        "description": "Status de conexão de rede da placa"
+                      },
+                      "lastSeen": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Último heartbeat recebido"
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Data de registro inicial da placa"
+                      }
+                    }
+                  }
+                },
+                "example": [
+                  {
+                    "id": "cmu8sw3e200005wmdim3a0903",
+                    "deviceHash": "KNM654Hybn2dER65B",
+                    "macAddress": "82:B8:73:9B:96:8C",
+                    "isOnline": true,
+                    "lastSeen": "2026-09-19T19:58:35.134Z",
+                    "createdAt": "2026-09-19T19:48:56.235Z"
+                  }
+                ]
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado (Token de usuário ausente ou inválido)."
+          }
+        }
+      }
     }
   }
 }

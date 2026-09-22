@@ -1,6 +1,6 @@
 import { DEVICE_ONLINE_EVENT, DEVICE_REGISTERED_EVENT } from "../constants";
 import { prisma } from "../database/prisma";
-import { EventSeverity } from "../generated/prisma/client";
+import { Device, EventSeverity } from "../generated/prisma/client";
 import { RegisterDeviceDTO } from "../types/device";
 
 export async function registerDevice(device: RegisterDeviceDTO): Promise<void> {
@@ -47,4 +47,17 @@ export async function registerDevice(device: RegisterDeviceDTO): Promise<void> {
       },
     });
   });
+}
+
+export async function getUnlinkedDevices(): Promise<Device[]> {
+  const unlinkedDevices = await prisma.device.findMany({
+    where: {
+      locker: null,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  return unlinkedDevices;
 }
