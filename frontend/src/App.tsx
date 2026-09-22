@@ -4,7 +4,7 @@ import RegisterForm from "./pages/RegisterForm";
 import CabinetList from "./pages/CabinetList";
 import ActivityHistory from "./pages/ActivityHistory";
 
-function App() {
+export default function App() {
   return (
     <BrowserRouter>
       <Routes>
@@ -16,5 +16,3 @@ function App() {
     </BrowserRouter>
   );
 }
-
-export default App;
