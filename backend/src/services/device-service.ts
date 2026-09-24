@@ -4,19 +4,19 @@ import { Device, EventSeverity } from "../generated/prisma/client";
 import { RegisterDeviceDTO } from "../types/device";
 
 export async function registerDevice(device: RegisterDeviceDTO): Promise<void> {
-  await prisma.$transaction(async (transaction) => {
-    const registeredDevice = await transaction.device.findUnique({
+  await prisma.$transaction(async (tx) => {
+    const registeredDevice = await tx.device.findUnique({
       where: { deviceHash: device.deviceHash },
     });
 
     if (registeredDevice) {
       if (!registeredDevice.isOnline) {
-        await transaction.device.update({
+        await tx.device.update({
           where: { id: registeredDevice.id },
           data: { isOnline: true, lastSeen: new Date() },
         });
 
-        await transaction.event.create({
+        await tx.event.create({
           data: {
             type: DEVICE_ONLINE_EVENT,
             message: `Dispositivo ${registeredDevice.macAddress} online`,
@@ -25,7 +25,7 @@ export async function registerDevice(device: RegisterDeviceDTO): Promise<void> {
           },
         });
       } else {
-        await transaction.device.update({
+        await tx.device.update({
           where: { id: registeredDevice.id },
           data: { lastSeen: new Date() },
         });
@@ -34,11 +34,11 @@ export async function registerDevice(device: RegisterDeviceDTO): Promise<void> {
       return;
     }
 
-    const createdDevice = await transaction.device.create({
+    const createdDevice = await tx.device.create({
       data: device,
     });
 
-    await transaction.event.create({
+    await tx.event.create({
       data: {
         type: DEVICE_REGISTERED_EVENT,
         message: `Novo dispositivo (${createdDevice.macAddress}) registrado`,

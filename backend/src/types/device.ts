@@ -1,3 +1,3 @@
-import { Prisma } from "../generated/prisma/client";
+import { DeviceCreateInput } from "../generated/prisma/models";
 
-export type RegisterDeviceDTO = Prisma.DeviceCreateInput
+export type RegisterDeviceDTO = DeviceCreateInput;

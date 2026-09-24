@@ -38,8 +38,8 @@ mqttRouter.on("devices/:deviceHash/status", async (params, payload) => {
     return;
   }
 
-  await prisma.$transaction(async (transaction) => {
-    const deviceExists = await transaction.device.findUnique({
+  await prisma.$transaction(async (tx) => {
+    const deviceExists = await tx.device.findUnique({
       where: {
         deviceHash,
       },
@@ -49,7 +49,7 @@ mqttRouter.on("devices/:deviceHash/status", async (params, payload) => {
       return;
     }
 
-    await transaction.device.update({
+    await tx.device.update({
       where: { deviceHash },
       data: {
         isOnline: false,
@@ -57,7 +57,7 @@ mqttRouter.on("devices/:deviceHash/status", async (params, payload) => {
       },
     });
 
-    await transaction.event.create({
+    await tx.event.create({
       data: {
         type: DEVICE_OFFLINE_EVENT,
         message: `O dispositivo ${deviceExists.macAddress} ficou offline`,

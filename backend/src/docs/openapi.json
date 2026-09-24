@@ -345,6 +345,198 @@
           }
         }
       }
+    },
+    "/api/v1/permissions/user/{id}": {
+      "get": {
+        "summary": "Get permissions by user ID",
+        "description": "Recupera todas as permissões de acesso ativas concedidas a um usuário específico no banco de dados.",
+        "tags": ["Permissions"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "O ID exclusivo (CUID2) do usuário para buscar as permissões",
+            "schema": {
+              "type": "string",
+              "example": "cmu8sw3e200005wmdim3a0903"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de permissões ativas do usuário retornada com sucesso.",
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "id": "cmu9sw3e200005wmdim3a0999",
+                    "lockerId": "clh78912300000xyz",
+                    "userId": "cmu8sw3e200005wmdim3a0903",
+                    "expiresAt": "2027-12-31T23:59:59.000Z",
+                    "createdAt": "2026-09-19T19:48:56.235Z"
+                  }
+                ]
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado (Token de usuário ausente ou inválido)."
+          }
+        }
+      }
+    },
+    "/api/v1/permissions/locker/{id}": {
+      "get": {
+        "summary": "Get permissions by locker ID",
+        "description": "Recupera todos os usuários autorizados com permissão de acesso para um armário inteligente específico.",
+        "tags": ["Permissions"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "O ID exclusivo (CUID2) do armário inteligente para listar as permissões",
+            "schema": {
+              "type": "string",
+              "example": "clh78912300000xyz"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de usuários permitidos no armário retornada com sucesso.",
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "id": "cmu9sw3e200005wmdim3a0999",
+                    "lockerId": "clh78912300000xyz",
+                    "userId": "cmu8sw3e200005wmdim3a0903",
+                    "expiresAt": "2027-12-31T23:59:59.000Z",
+                    "createdAt": "2026-09-19T19:48:56.235Z"
+                  }
+                ]
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado (Token de usuário ausente ou inválido)."
+          }
+        }
+      }
+    },
+    "/api/v1/permissions/{lockerId}": {
+      "patch": {
+        "summary": "Upsert permissions (Bulk)",
+        "description": "Atualiza ou insere as permissões de acesso de múltiplos usuários para um armário de forma atômica (delete e createMany) [1].",
+        "tags": ["Permissions"],
+        "parameters": [
+          {
+            "name": "lockerId",
+            "in": "path",
+            "required": true,
+            "description": "O ID exclusivo (CUID2) do armário inteligente que receberá as novas permissões",
+            "schema": {
+              "type": "string",
+              "example": "clh78912300000xyz"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["userId", "expiresAt"],
+                  "properties": {
+                    "userId": {
+                      "type": "string",
+                      "description": "O ID (CUID2) do usuário a ser permitido"
+                    },
+                    "expiresAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Data e hora de expiração da validade de acesso físico"
+                    }
+                  }
+                }
+              },
+              "example": [
+                {
+                  "userId": "cmu8sw3e200005wmdim3a0903",
+                  "expiresAt": "2027-12-31T23:59:59.000Z"
+                }
+              ]
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Operação de concessão concluída e registrada de forma atômica na auditoria."
+          },
+          "400": {
+            "description": "Falha na validação do payload ou um ou mais IDs informados não existem no sistema."
+          },
+          "401": {
+            "description": "Não autorizado (Token de usuário ausente ou inválido)."
+          }
+        }
+      },
+      "delete": {
+        "summary": "Revoke permissions",
+        "description": "Revoga as permissões de acesso físicas de múltiplos usuários para um armário inteligente de forma atômica e registra o histórico [1].",
+        "tags": ["Permissions"],
+        "parameters": [
+          {
+            "name": "lockerId",
+            "in": "path",
+            "required": true,
+            "description": "O ID exclusivo (CUID2) do armário que terá as permissões revogadas",
+            "schema": {
+              "type": "string",
+              "example": "clh78912300000xyz"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["userIds"],
+                "properties": {
+                  "userIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Lista de IDs de usuários (CUID2) que terão o acesso revogado"
+                  }
+                }
+              },
+              "example": {
+                "userIds": ["cmu8sw3e200005wmdim3a0903"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Acessos deletados com sucesso no banco de dados físico."
+          },
+          "400": {
+            "description": "Falha na validação dos IDs enviados."
+          },
+          "401": {
+            "description": "Não autorizado (Token de usuário ausente ou inválido)."
+          }
+        }
+      }
     }
   }
 }
