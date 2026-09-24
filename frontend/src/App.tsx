@@ -1,18 +1,36 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import LoginForm from "./pages/LoginForm";
-import RegisterForm from "./pages/RegisterForm";
-import CabinetList from "./pages/CabinetList";
-import ActivityHistory from "./pages/ActivityHistory";
+import { createBrowserRouter } from "react-router-dom";
+import RootLayout from "./layouts/RootLayout";
+import { routes } from "./routes/routes";
 
-export default function App() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<LoginForm />} />
-        <Route path="/registro" element={<RegisterForm />} />
-        <Route path="/lista-armarios" element={<CabinetList />} />
-        <Route path="/historico-atividades" element={<ActivityHistory />} />
-      </Routes>
-    </BrowserRouter>
-  );
-}
+// páginas
+import Dashboard from "./pages/Dashboard";
+import LoginForm from "./pages/old/LoginForm";
+import Users from "./pages/Users";
+import Lockers from "./pages/Lockers";
+import Logs from "./pages/Logs";
+
+export const router = createBrowserRouter([
+  {
+    path: routes.login.path,
+    element: <LoginForm />
+  },
+  {
+    path: routes.forbidden.path,
+    // element:<Forbidden/>
+  },
+  {
+    path: "/",
+    element: (
+      // <RequireAuth>
+      <RootLayout />
+      // </RequireAuth>
+    ),
+    children: [
+      { index: true, element: <Dashboard /> },
+      { path: routes.dashboard.path, element: <Dashboard /> },
+      { path: routes.users.path, element: <Users /> },
+      { path: routes.lockers.path, element: <Lockers /> },
+      { path: routes.logs.path, element: <Logs /> }
+    ]
+  }
+])

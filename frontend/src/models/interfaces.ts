@@ -14,7 +14,13 @@ export interface Locker {
     id: string
     name: string
     location: string
-    deviceId: string | null 
+    deviceId: string | null
     doorState: DoorState
     createdAt: string
+}
+
+export interface AuthContextData {
+    user: User | null
+    login: () => void
+    logout: () => void
 }

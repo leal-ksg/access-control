@@ -1,10 +1,10 @@
-import { Locker, User } from "./interfaces"
+import { Locker, User } from "../models/interfaces"
 
-export const users: User[] = [
+export const mockUsers: User[] = [
     {
         id: "user-1",
-        name: "Admin",
-        surname: "Sistema",
+        name: "João",
+        surname: "Silva",
         email: "admin@example.com",
         active: true,
         createdAt: "2026-09-01T10:00:00Z",
@@ -12,8 +12,8 @@ export const users: User[] = [
     },
     {
         id: "user-2",
-        name: "João",
-        surname: "Professor",
+        name: "Amanda",
+        surname: "Santos",
         email: "professor@example.com",
         active: true,
         createdAt: "2026-09-02T10:00:00Z",
@@ -30,7 +30,7 @@ export const users: User[] = [
     },
 ]
 
-export const lockers: Locker[] = [
+export const mockLockers: Locker[] = [
     {
         id: "locker-1",
         name: "Armário 01",

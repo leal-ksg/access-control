@@ -1,4 +1,4 @@
-import { CabinetCard } from "../components/CabinetCard";
+import { CabinetCard } from "../../components/old/CabinetCard";
 
 interface Cabinet {
   id: string;
