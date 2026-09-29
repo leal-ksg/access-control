@@ -1,4 +1,4 @@
-import { DoorState, UserRole } from "./types"
+import { DoorState, EventSeverity, UserRole } from "./types"
 
 export interface User {
     id: string
@@ -25,4 +25,17 @@ export interface AuthContextData {
     loading: boolean
     login: () => void
     logout: () => void
+}
+
+export interface Event {
+    id: string
+    correlationId: string | null
+    type: string
+    severity: EventSeverity
+    message: string | null
+    userId: string | null
+    lockerId: string | null
+    deviceId: string | null
+    metadata: Record<string, unknown> | null
+    createdAt: string
 }
