@@ -8,6 +8,9 @@ import LoginForm from "./pages/old/LoginForm";
 import Users from "./pages/Users";
 import Lockers from "./pages/Lockers";
 import Logs from "./pages/Logs";
+import RequireAuth from "./auth/RequireAuth";
+import Forbidden from "./pages/Forbidden";
+import NotFound from "./pages/NotFound";
 
 export const router = createBrowserRouter([
   {
@@ -16,14 +19,14 @@ export const router = createBrowserRouter([
   },
   {
     path: routes.forbidden.path,
-    // element:<Forbidden/>
+    element: <Forbidden />
   },
   {
     path: "/",
     element: (
-      // <RequireAuth>
-      <RootLayout />
-      // </RequireAuth>
+      <RequireAuth>
+        <RootLayout />
+      </RequireAuth>
     ),
     children: [
       { index: true, element: <Dashboard /> },
@@ -32,5 +35,9 @@ export const router = createBrowserRouter([
       { path: routes.lockers.path, element: <Lockers /> },
       { path: routes.logs.path, element: <Logs /> }
     ]
+  },
+  {
+    path: "*",
+    element: <NotFound />
   }
 ])

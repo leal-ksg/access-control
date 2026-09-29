@@ -28,6 +28,15 @@ export const mockUsers: User[] = [
         createdAt: "2026-09-03T10:00:00Z",
         role: "STUDENT",
     },
+    {
+        id: "user-4",
+        name: "Ronaldo",
+        surname: "Alencar",
+        email: "ronaldo@example.com",
+        active: false,
+        createdAt: "2026-09-10T10:00:00Z",
+        role: "STUDENT",
+    },
 ]
 
 export const mockLockers: Locker[] = [
@@ -56,3 +65,5 @@ export const mockLockers: Locker[] = [
         createdAt: "2026-09-01T10:20:00Z",
     },
 ]
+
+export const mockToken: string = "123"

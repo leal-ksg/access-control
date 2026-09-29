@@ -21,6 +21,8 @@ export interface Locker {
 
 export interface AuthContextData {
     user: User | null
+    token: string | null
+    loading: boolean
     login: () => void
     logout: () => void
 }

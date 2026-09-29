@@ -1,7 +1,7 @@
+import Title from "../components/Title";
+
 export default function Dashboard() {
-    return (
-        <div>
-            <h1>Bem-vindo ao sistema!</h1>
-        </div>
-    )
+    return (<>
+        <Title texto={"Bem-vindo ao sistema!"} />
+    </>)
 }

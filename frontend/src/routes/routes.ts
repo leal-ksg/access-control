@@ -1,6 +1,6 @@
 export const routes = {
     dashboard: {
-        path: "/",
+        path: "/dashboard",
         name: "Dashboard"
     },
     users: {
@@ -26,7 +26,7 @@ export const routes = {
 }
 
 // usado pelo elemento Sidebar
-export const navigationRoutes=[
+export const navigationRoutes = [
     routes.dashboard,
     routes.users,
     routes.lockers,

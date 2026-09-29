@@ -1,5 +1,7 @@
+import Title from "../components/Title";
+
 export default function Lockers() {
-    return (<div>
-        <h1>Armários</h1>
-    </div>)
+    return (<>
+        <Title texto={"Armários"} />
+    </>)
 }

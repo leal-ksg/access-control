@@ -10,10 +10,7 @@ export default function Header() {
             <div className="flex h-16 items-center justify-between px-6">
                 <div className="flex items-center gap-10">
                     <span className="text-lg font-semibold">
-                        Access Control
-                    </span>
-                    <span className="text-sm text-green-300">
-                        {user && beautifyRole(user.role)}
+                        Access Control - {user && beautifyRole(user.role)}
                     </span>
                 </div>
 
