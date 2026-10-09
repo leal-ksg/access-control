@@ -1,6 +1,6 @@
 import { FormEvent, useState } from "react";
-import { Input } from "../components/Input";
-import { Button } from "../components/Button";
+import { Input } from "../../components/old/Input";
+import { Button } from "../../components/old/Button";
 
 interface CabinetFormValues {
   name: string;

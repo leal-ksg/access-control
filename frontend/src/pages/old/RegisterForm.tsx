@@ -1,7 +1,7 @@
 import { FormEvent, useState } from "react";
-import { Input } from "../components/Input";
-import { Select } from "../components/Select";
-import { Button } from "../components/Button";
+import { Input } from "../../components/old/Input";
+import { Select } from "../../components/old/Select";
+import { Button } from "../../components/old/Button";
 
 interface RegisterFormValues {
   fullName: string;

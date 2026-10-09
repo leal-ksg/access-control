@@ -1,8 +1,8 @@
 import { FormEvent, useState } from "react";
 import { ArrowUpRight } from "lucide-react";
-import { Input } from "../components/Input";
-import { Checkbox } from "../components/Checkbox";
-import { Button } from "../components/Button";
+import { Input } from "../../components/old/Input";
+import { Checkbox } from "../../components/old/Checkbox";
+import { Button } from "../../components/old/Button";
 
 interface LoginFormValues {
   email: string;

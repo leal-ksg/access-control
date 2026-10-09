@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { ActivityTable, ActivityRow } from "../components/ActivityTable";
-import { FilterInput } from "../components/FilterInput";
-import { Button } from "../components/Button";
+import { ActivityTable, ActivityRow } from "../../components/old/ActivityTable"
+import { FilterInput } from "../../components/old/FilterInput";
+import { Button } from "../../components/old/Button";
 
 const MOCK_ROWS: ActivityRow[] = Array.from({ length: 10 }, (_, index) => ({
   id: String(index + 1),
