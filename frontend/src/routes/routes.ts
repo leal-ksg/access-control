@@ -22,6 +22,9 @@ export const routes = {
     forbidden: {
         path: "/proibido",
         name: "Proibido"
+    },
+    api: {
+        login: "/auth/login"
     }
 }
 
