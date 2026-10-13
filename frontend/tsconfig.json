@@ -4,7 +4,8 @@
             "vite/client"
         ],
         "moduleResolution": "bundler",
-        "module": "esnext"
+        "module": "esnext",
+        "jsx": "react-jsx"
     },
     "include": [
         "src"

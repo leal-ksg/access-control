@@ -1,11 +1,8 @@
 import { NavLink } from "react-router-dom";
-import { useAuth } from "../auth/AuthContext";
 import { navigationRoutes } from "../routes/routes";
 
 export default function Sidebar() {
     // ARRUMAR PERMISSÕES DE ACESSO
-    const { user } = useAuth()
-
     return (
         <aside className="w-50 shrink-0 bg-primary text-white">
             <nav className="flex flex-col gap-5 p-4">

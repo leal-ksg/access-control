@@ -24,7 +24,8 @@ export const routes = {
         name: "Proibido"
     },
     api: {
-        login: "/auth/login"
+        login: "/auth/login",
+        users: "/users"
     }
 }
 

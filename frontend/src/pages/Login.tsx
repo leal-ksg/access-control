@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { routes } from "../routes/routes";
 import Input from "../components/Input";
 import axios from "axios";
+import Header from "../components/Header";
 
 export default function Login() {
     const { login } = useAuth()
@@ -36,17 +37,21 @@ export default function Login() {
             navigate(location.state?.from?.pathname ?? routes.dashboard.path, { replace: true })
         } catch (error: unknown) {
             console.error("Erro ao realizar login:", error)
-            setError((axios.isAxiosError(error)) ? error.response?.data?.message : "Credenciais inválidas")
+            setError(
+                (axios.isAxiosError(error))
+                    ? error.response?.data?.message || error.response?.data?.error
+                    : "Credenciais inválidas"
+            )
         } finally {
             setLoading(false)
         }
     }
 
     return (
-        <div className="flex flex-col gap-10 w-full max-w-lg p-8 min-h-screen mx-auto justify-center">
-            <h1 className="text-center font-bold text-2xl">Login</h1>
+        <div className="min-h-screen flex flex-col">
+            <Header />
             <form
-                className="flex flex-col gap-5"
+                className="flex flex-col flex-1 gap-10 w-full max-w-lg p-8 mx-auto justify-center"
                 onSubmit={handleSubmit}
             >
                 <Input
@@ -83,6 +88,5 @@ export default function Login() {
                 </button>
             </form>
         </div>
-
     )
 }
