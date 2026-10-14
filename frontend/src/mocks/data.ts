@@ -1,43 +1,4 @@
-import { Event, Locker, User } from "../models/interfaces"
-
-export const mockUsers: User[] = [
-    {
-        id: "user-1",
-        name: "João",
-        surname: "Silva",
-        email: "admin@example.com",
-        active: true,
-        createdAt: "2026-09-01T10:00:00Z",
-        role: "ADMIN",
-    },
-    {
-        id: "user-2",
-        name: "Amanda",
-        surname: "Santos",
-        email: "professor@example.com",
-        active: true,
-        createdAt: "2026-09-02T10:00:00Z",
-        role: "TEACHER",
-    },
-    {
-        id: "user-3",
-        name: "Maria",
-        surname: "Silva",
-        email: "maria@example.com",
-        active: true,
-        createdAt: "2026-09-03T10:00:00Z",
-        role: "STUDENT",
-    },
-    {
-        id: "user-4",
-        name: "Ronaldo",
-        surname: "Alencar",
-        email: "ronaldo@example.com",
-        active: false,
-        createdAt: "2026-09-10T10:00:00Z",
-        role: "STUDENT",
-    },
-]
+import { Event, Locker } from "../models/interfaces"
 
 export const mockLockers: Locker[] = [
     {

@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "types": [
+            "vite/client"
+        ],
+        "moduleResolution": "bundler",
+        "module": "esnext",
+        "jsx": "react-jsx"
+    },
+    "include": [
+        "src"
+    ]
+}

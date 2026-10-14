@@ -23,7 +23,7 @@ export interface AuthContextData {
     user: User | null
     token: string | null
     loading: boolean
-    login: () => void
+    login: (dados: UserLogin) => Promise<void>
     logout: () => void
 }
 
@@ -38,4 +38,9 @@ export interface Event {
     deviceId: string | null
     metadata: Record<string, unknown> | null
     createdAt: string
+}
+
+export interface UserLogin {
+    email: string
+    password: string
 }

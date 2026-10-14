@@ -4,18 +4,18 @@ import { routes } from "./routes/routes";
 
 // páginas
 import Dashboard from "./pages/Dashboard";
-import LoginForm from "./pages/old/LoginForm";
 import Users from "./pages/Users";
 import Lockers from "./pages/Lockers";
 import Logs from "./pages/Logs";
 import RequireAuth from "./auth/RequireAuth";
 import Forbidden from "./pages/Forbidden";
 import NotFound from "./pages/NotFound";
+import Login from "./pages/Login";
 
 export const router = createBrowserRouter([
   {
     path: routes.login.path,
-    element: <LoginForm />
+    element: <Login />
   },
   {
     path: routes.forbidden.path,
