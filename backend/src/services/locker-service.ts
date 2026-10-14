@@ -3,6 +3,7 @@ import { prisma } from "../database/prisma";
 import { EventSeverity, Locker } from "../generated/prisma/client";
 import mqttClient from "../mqtt/config";
 import { LOCKER_UNLOCKED_EVENT, UNLOCK_LOCKER_TOPIC } from "../constants";
+import { validateLockerPermission } from "./locker-permission-service";
 
 export async function getLockers(): Promise<Locker[]> {
   const lockers = await prisma.locker.findMany();
@@ -84,25 +85,7 @@ export async function unlockLocker(lockerId: string, userId: string) {
 
   if (!locker) throw new HttpError("O armário solicitado não foi encontrado");
 
-  const permission = await prisma.lockerPermission.findUnique({
-    where: {
-      lockerId_userId: {
-        lockerId,
-        userId,
-      },
-    },
-  });
-
-  if (!permission) {
-    throw new HttpError("Você não tem permissão para abrir esse armário");
-  }
-
-  const isUserAuthorized =
-    permission.expiresAt === null || permission.expiresAt > new Date();
-
-  if (!isUserAuthorized) {
-    throw new HttpError("Sua permissão de acesso para este armário expirou.");
-  }
+  await validateLockerPermission(lockerId, userId);
 
   const { device } = locker;
 

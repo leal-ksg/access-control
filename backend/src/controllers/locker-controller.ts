@@ -46,8 +46,7 @@ export async function deleteLocker(req: Request, res: Response) {
 
 export async function unlockLocker(req: Request, res: Response) {
   const lockerId = req.params.id as string;
-  // const userId = req.user?.id as string;
-  const userId = 'cmu7kgu500000dwmdmrwl65ti'
+  const userId = req.user?.id as string;
 
   if (!lockerId || !userId)
     throw new HttpError(

@@ -4,7 +4,10 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { LoginResponse } from "../types/login";
 
-export async function login(email: string, password: string): Promise<LoginResponse> {
+export async function login(
+  email: string,
+  password: string,
+): Promise<LoginResponse> {
   const user = await prisma.user.findUnique({
     where: { email },
   });
@@ -18,7 +21,7 @@ export async function login(email: string, password: string): Promise<LoginRespo
   const { password: _, ...userWithoutPassword } = user;
 
   const token = jwt.sign(
-    { sub: userWithoutPassword.id },
+    { sub: userWithoutPassword },
     process.env.JWT_SECRET!,
     { expiresIn: "1d" },
   );

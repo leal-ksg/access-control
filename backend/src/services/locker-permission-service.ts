@@ -1,8 +1,55 @@
-import { LOCKER_PERMISSIONS_GRANTED_EVENT, LOCKER_PERMISSIONS_REVOKED_EVENT } from "../constants";
+import {
+  LOCKER_PERMISSIONS_GRANTED_EVENT,
+  LOCKER_PERMISSIONS_REVOKED_EVENT,
+} from "../constants";
 import { HttpError } from "../core/http-error";
 import { prisma } from "../database/prisma";
-import { EventSeverity, LockerPermission } from "../generated/prisma/client";
+import {
+  EventSeverity,
+  LockerPermission,
+  UserRole,
+} from "../generated/prisma/client";
 import { LockerPermissionDTO } from "../types/locker-permission";
+import { AuthenticatedUser } from "../types/user";
+
+export async function validateLockerPermission(
+  lockerId: string,
+  userId: string,
+) {
+  const permission = await prisma.lockerPermission.findUnique({
+    where: {
+      lockerId_userId: {
+        lockerId,
+        userId,
+      },
+    },
+    include: {
+      user: {
+        select: {
+          active: true,
+        },
+      },
+    },
+  });
+
+  if (!permission) {
+    throw new HttpError("Você não tem acesso a esse armário");
+  }
+
+  if (!permission.user || !permission.user.active) {
+    throw new HttpError(
+      "Sua conta de usuário está inativa no sistema. Acesso recusado.",
+      403,
+    );
+  }
+
+  const isUserAuthorized =
+    permission.expiresAt === null || permission.expiresAt > new Date();
+
+  if (!isUserAuthorized) {
+    throw new HttpError("Seu acesso a este armário expirou.");
+  }
+}
 
 export async function getPermissionsByUserId(
   userId: string,
@@ -30,10 +77,15 @@ export async function getPermissionsByLockerId(
 
 export async function upsertPermissions(
   lockerId: string,
-  requesterUserId: string,
+  requesterUser: AuthenticatedUser,
   permissions: LockerPermissionDTO[],
 ): Promise<void> {
   await prisma.$transaction(async (tx) => {
+    if (requesterUser.role === UserRole.STUDENT)
+      throw new HttpError(
+        "Você não pode conceder acesso a armários para outros usuários",
+      );
+
     const existingLocker = await tx.locker.findUnique({
       select: {
         name: true,
@@ -44,6 +96,10 @@ export async function upsertPermissions(
     });
 
     if (!existingLocker) throw new HttpError("O armário não existe");
+
+    if (requesterUser.role === UserRole.TEACHER) {
+      await validateLockerPermission(lockerId, requesterUser.id);
+    }
 
     const uniquePermissions = [
       ...new Map(
@@ -88,7 +144,7 @@ export async function upsertPermissions(
 
     await tx.event.create({
       data: {
-        userId: requesterUserId,
+        userId: requesterUser.id,
         lockerId,
         type: LOCKER_PERMISSIONS_GRANTED_EVENT,
         severity: EventSeverity.WARNING,
