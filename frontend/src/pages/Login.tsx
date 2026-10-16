@@ -75,14 +75,14 @@ export default function Login() {
                     onChange={updateField}
                 />
                 {error && (
-                    <p className="text-sm text-[var(--red)]">
+                    <p className="text-md text-[var(--red)]">
                         {error}
                     </p>
                 )}
                 <button
                     type="submit"
                     disabled={loading}
-                    className="w-full rounded-lg bg-[var(--color-primary)] p-5 text-white font-semibold hover:bg-[var(--color-secondary)] transition disable:opacity-50"
+                    className="w-full rounded-lg bg-[var(--color-primary)] p-5 text-white font-semibold hover:bg-[var(--color-secondary)] transition disable:opacity-50 text-lg"
                 >
                     {loading ? "Entrando" : "Entrar"}
                 </button>

@@ -25,7 +25,10 @@ export const routes = {
     },
     api: {
         login: "/auth/login",
-        users: "/users"
+        users: "/users",
+        docs: "/docs",
+        lockers: "/lockers",
+        openLocker: (lockerId: string) => `/lockers/${lockerId}/unlock`
     }
 }
 

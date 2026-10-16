@@ -1,4 +1,4 @@
-import { DoorState, EventSeverity, UserRole } from "./types"
+import { DoorState, EventSeverity, UserRole } from "./enums"
 
 export interface User {
     id: string

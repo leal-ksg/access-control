@@ -3,6 +3,8 @@
 @theme {
     --color-primary: #121A35;
     --color-secondary: black;
+    --button: #293763;
+    --button-hover: #344573;
     --card-color: #E7E7E7;
     --green: #B3FFA1;
     --red: #912421;

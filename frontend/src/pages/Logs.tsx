@@ -3,7 +3,7 @@ import { mockEvents } from "../mocks/data"
 
 export default function Logs() {
   return (<>
-    <Title texto={"Histórico de registros"} />
+    <Title texto="Histórico de registros" />
     <div className="overflow-x-auto rounded-2xl">
       <table className="w-full min-w-[700px] border-collapse">
         <thead className="bg-[var(--color-primary)] text-white">

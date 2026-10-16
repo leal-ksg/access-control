@@ -2,9 +2,6 @@ import axios from "axios";
 import { routes } from "../routes/routes";
 import clearSession from "../utils/clearSession"
 
-const login = routes.login.path
-const forbidden = routes.forbidden.path
-
 const redirect = (route: string) => window.location.assign(route)
 
 export const http = axios.create({
@@ -23,15 +20,13 @@ http.interceptors.request.use((config) => {
 http.interceptors.response.use(
     (response) => response,
     (error) => {
-        const status = error?.response?.status
-
-        switch (status) {
+        switch (error?.response?.status) {
             case 401: // Unauthorized
                 clearSession()
-                if (window.location.pathname !== login) redirect(login);
+                if (window.location.pathname !== routes.login.path) redirect(routes.login.path);
                 break
             case 403: // Forbidden
-                if (window.location.pathname !== forbidden) redirect(forbidden);
+                if (window.location.pathname !== routes.forbidden.path) redirect(routes.forbidden.path);
                 break
 
         }

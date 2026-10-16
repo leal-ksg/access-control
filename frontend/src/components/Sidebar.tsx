@@ -11,9 +11,9 @@ export default function Sidebar() {
                         key={route.path}
                         to={route.path}
                         className={({ isActive }) =>
-                            `w-full rounded bg-[#293763] px-5 py-2 ${isActive
+                            `w-full rounded bg-[var(--button)] px-5 py-2 ${isActive
                                 ? "font-medium"
-                                : "hover:bg-[#344573]"
+                                : "hover:bg-[var(--button-hover)]"
                             }`}
                     >
                         {route.name}

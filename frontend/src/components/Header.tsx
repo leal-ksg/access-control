@@ -1,6 +1,6 @@
 import { LogOut, User } from "lucide-react"
 import { useAuth } from "../auth/AuthContext"
-import beautifyRole from "../utils/role"
+import { prettyRole } from "../models/enums"
 
 export default function Header() {
     const { user, logout } = useAuth()
@@ -11,7 +11,7 @@ export default function Header() {
             <div className="flex h-16 items-center justify-between px-6">
                 <div className="flex items-center gap-10">
                     <span className="text-lg font-semibold">
-                        Access Control - {user ? beautifyRole(user.role) : "Login"}
+                        Access Control - {user ? prettyRole(user.role) : "Login"}
                     </span>
                 </div>
                 {user && (
