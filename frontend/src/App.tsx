@@ -6,7 +6,7 @@ import { routes } from "./routes/routes";
 import Dashboard from "./pages/Dashboard";
 import Users from "./pages/Users";
 import Lockers from "./pages/Lockers";
-import Logs from "./pages/Logs";
+import Events from "./pages/Events";
 import RequireAuth from "./auth/RequireAuth";
 import Forbidden from "./pages/Forbidden";
 import NotFound from "./pages/NotFound";
@@ -33,7 +33,7 @@ export const router = createBrowserRouter([
       { path: routes.dashboard.path, element: <Dashboard /> },
       { path: routes.users.path, element: <Users /> },
       { path: routes.lockers.path, element: <Lockers /> },
-      { path: routes.logs.path, element: <Logs /> }
+      { path: routes.logs.path, element: <Events /> }
     ]
   },
   {

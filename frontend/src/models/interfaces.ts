@@ -27,6 +27,15 @@ export interface AuthContextData {
     logout: () => void
 }
 
+interface EventUser {
+    name: string
+    email: string
+}
+
+interface EventLocker {
+    name: string
+}
+
 export interface Event {
     id: string
     correlationId: string | null
@@ -38,6 +47,8 @@ export interface Event {
     deviceId: string | null
     metadata: Record<string, unknown> | null
     createdAt: string
+    user: EventUser | null
+    locker: EventLocker | null
 }
 
 export interface UserLogin {

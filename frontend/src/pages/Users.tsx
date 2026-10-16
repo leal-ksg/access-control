@@ -14,7 +14,7 @@ export default function Users() {
 
     async function getUsers() {
         try {
-            const { data } = await http.get(routes.api.users)
+            const { data } = await http.get<User[]>(routes.api.users)
             setUsers(data)
         } catch (error: unknown) {
             console.error("Erro ao buscar usuários:", error)
