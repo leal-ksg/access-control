@@ -29,6 +29,9 @@ export const routes = {
         docs: "/docs",
         lockers: "/lockers",
         events: "/events",
+        permissions: "/permissions",
+        user: "/user", // relacionado com permissões
+        locker: "/locker", // relacionado com permissões
         openLocker: (lockerId: string) => `/lockers/${lockerId}/unlock`
     }
 }

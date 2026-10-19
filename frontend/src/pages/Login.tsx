@@ -31,6 +31,7 @@ export default function Login() {
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
         setLoading(true)
+        setError("")
 
         try {
             await login(values)
@@ -74,7 +75,7 @@ export default function Login() {
                     value={values.password}
                     onChange={updateField}
                 />
-                {error && (
+                {!loading && error && (
                     <p className="text-md text-[var(--red)]">
                         {error}
                     </p>
@@ -84,7 +85,7 @@ export default function Login() {
                     disabled={loading}
                     className="w-full rounded-lg bg-[var(--color-primary)] p-5 text-white font-semibold hover:bg-[var(--color-secondary)] transition disable:opacity-50 text-lg"
                 >
-                    {loading ? "Entrando" : "Entrar"}
+                    {loading ? "Entrando" : error ? "Tentar novamente" : "Entrar"}
                 </button>
             </form>
         </div>

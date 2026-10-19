@@ -1,0 +1,45 @@
+@baseUrl = http://localhost:3000/api/v1
+@login = {{baseUrl}}/auth/login
+@pessoas = {{baseUrl}}/users
+@armarios = {{baseUrl}}/lockers
+@eventos = {{baseUrl}}/events
+@permissoes = {{baseUrl}}/permissions
+
+@email = {{$dotenv email}}
+@password = {{$dotenv password}}
+@user = {{$dotenv idUser}}
+@locker = {{$dotenv idLocker}}
+
+### login
+# @name Login
+POST {{login}}
+Content-Type: application/json
+
+{
+    "email": "{{email}}",
+    "password": "{{password}}"
+}
+
+### pessoas
+GET {{pessoas}}
+Authorization: Bearer {{Login.response.body.token}}
+
+### pessoa 1
+GET {{pessoas}}/{{user}}
+Authorization: Bearer {{Login.response.body.token}}
+
+### armários
+GET {{armarios}}
+Authorization: Bearer {{Login.response.body.token}}
+
+### armário 1
+GET {{armarios}}/{{locker}}
+Authorization: Bearer {{Login.response.body.token}}
+
+### permissões usuário
+GET {{permissoes}}/user/{{user}}
+Authorization: Bearer {{Login.response.body.token}}
+
+### permissões armário
+GET {{permissoes}}/locker/{{locker}}
+Authorization: Bearer {{Login.response.body.token}}

@@ -55,3 +55,10 @@ export interface UserLogin {
     email: string
     password: string
 }
+
+export interface LockerPermission {
+    lockerId: string
+    userId: string
+    createdAt: string
+    expiresAt: string | null
+}
