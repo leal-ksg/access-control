@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Locker, LockerPermission, User } from "../models/interfaces";
+import { Locker, User } from "../models/interfaces";
 import { http } from "../api/http";
 import { routes } from "../routes/routes";
 import Title from "../components/Title";
@@ -11,6 +11,7 @@ import { prettyRole } from "../models/enums";
 import LoadingElement from "../components/Loading";
 import LockerCards from "../components/Cards/LockerCards";
 import ReturnButton from "../components/ReturnButton";
+import { getPermissionData } from "../utils/permissions";
 
 export default function UserProfile() {
     const { id } = useParams()
@@ -37,15 +38,12 @@ export default function UserProfile() {
     }
 
     async function getLockers() {
-        const { data } = await http.get<LockerPermission[]>(`${routes.api.permissions}${routes.api.user}/${id}`)
-
-        const validPermission = data.filter(perm => perm.expiresAt === null || new Date(perm.expiresAt) > new Date())
-
-        const lockers = await Promise.all(
-            validPermission.map(perm => http.get(`${routes.api.lockers}/${perm.lockerId}`))
-        )
-
-        setLockers(lockers.map(res => res.data))
+        const lockers = await getPermissionData({
+            permissionUrl: `${routes.api.permissions}${routes.api.user}/${id}`,
+            resourceUrl: `${routes.api.lockers}`,
+            resource: perm => perm.lockerId
+        })
+        setLockers(lockers)
     }
 
     useEffect(() => {

@@ -1,11 +1,8 @@
-import { Link } from "react-router-dom";
 import { routes } from "../routes/routes";
-import { ArrowUpRight } from "lucide-react";
 import Title from "../components/Title";
 import { useEffect, useState } from "react";
 import { User } from "../models/interfaces";
 import { http } from "../api/http";
-import { prettyRole } from "../models/enums";
 import LoadingElement from "../components/Loading";
 import ErrorElement from "../components/Error";
 import UserCards from "../components/Cards/UserCards";
