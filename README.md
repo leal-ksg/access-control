@@ -1,6 +1,6 @@
 # Access Control
 
-Sistema para gerenciamento e controle de acesso aos armários do PIPA IFmakeRS. A solução permite gerenciar usuários e permissões, registrar acessos e integrar o sistema web com dispositivos eletrônicos responsáveis pelo controle físico dos armários.
+Sistema para gerenciamento e controle de acesso a armários. A solução permite gerenciar usuários e permissões, registrar acessos e integrar o sistema web com dispositivos eletrônicos responsáveis pelo controle físico de abertura.
 
 ## Licença
 
@@ -15,44 +15,48 @@ Este projeto está licenciado sob a [licença MIT](./LICENSE).
 - Usuários:
     - Autenticação de usuários
     - Gerenciamento de usuários
-    - Gerenciamento de permissões de acesso
 
 - Armários:
     - Gerenciamento de armários
-    - Controle de acesso aos armários
+    - Gerenciamento de permissões de acesso
 
-- Logs:
-    - Registro dos acessos realizados
+- Eventos:
+    - Registro dos acessos realizados e outros eventos
 
-- Demais:
-    - Integração entre o sistema web e os dispositivos Arduino
+- Hardware:
+    - Integração entre sistema web e dispositivos Arduino ESP32
     - Comunicação com os dispositivos utilizando MQTT
 
 ## Tecnologias
 
 ### Backend
 
-- Node.js
-- TypeScript
+- Bcrypt
+- Cookie Parser
+- CORS
+- dotenv
 - Express
+- JSON Web Token (JWT)
+- MQTT
+- Node.js
+- pg (PostgreSQL)
 - PostgreSQL
 - Prisma
-- MQTT
-- Bcrypt
-- JSON Web Token (JWT)
-- Zod
 - Swagger UI
-- CORS
-- Cookie Parser
-- dotenv
+- TypeScript
+- Zod
 
 ### Frontend
 
-- React
-- React Router
-- Tailwind CSS
-- Vite
+- Axios
+- ESLint
 - Lucide React
+- React
+- React Dom
+- React Router Dom
+- Tailwind CSS
+- TypeScript
+- Vite
 
 ## Pré-requisitos
 - Node.js
@@ -150,6 +154,8 @@ chmod +x ./start.sh
 ```
 
 ## URLs e portas
+
+Observação: podem ser diferentes, dependendo do seu sistema.
 
 ### Frontend
 http://localhost:5173/
