@@ -13,6 +13,8 @@ import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import UserProfile from "./pages/UserProfile";
 import LockerProfile from "./pages/LockerProfile";
+import UserEdit from "./pages/UserEdit";
+import UserCreate from "./pages/UserCreate";
 
 export const router = createBrowserRouter([
   {
@@ -37,7 +39,10 @@ export const router = createBrowserRouter([
       { path: `${routes.users.path}/:id`, element: <UserProfile /> },
       { path: `${routes.lockers.path}/:id`, element: <LockerProfile /> },
       { path: routes.lockers.path, element: <Lockers /> },
-      { path: routes.logs.path, element: <Events /> }
+      { path: routes.logs.path, element: <Events /> },
+      {path: routes.userEdit.path, element: <UserEdit/>},
+      {path: routes.userCreate.path, element: <UserCreate/>},
+
     ]
   },
   {

@@ -12,6 +12,7 @@ import LoadingElement from "../components/Loading";
 import LockerCards from "../components/Cards/LockerCards";
 import ReturnButton from "../components/ReturnButton";
 import { getPermissionData } from "../utils/permissions";
+import Button from "../components/Button";
 
 export default function UserProfile() {
     const { id } = useParams()
@@ -56,7 +57,9 @@ export default function UserProfile() {
         }
     }, [id])
 
-    return (<>
+    return (
+        <section className="h-full relative">
+            <Button to={routes.userEdit.path} texto="Editar usuário" />
         {loading
             ? <LoadingElement texto="página do usuário" />
             : error
@@ -76,5 +79,5 @@ export default function UserProfile() {
                     />
                 </>)
         }
-    </>)
+    </section>)
 }

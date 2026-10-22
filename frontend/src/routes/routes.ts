@@ -5,7 +5,15 @@ export const routes = {
     },
     users: {
         path: "/usuarios",
-        name: "Usuários"
+        name: "Usuários",
+    },
+    userEdit:{
+         path: "/usuarios/editar",
+        name: "editar",
+    },
+    userCreate:{
+         path: "/usuarios/criar",
+        name: "Criar",
     },
     lockers: {
         path: "/armarios",
@@ -33,7 +41,8 @@ export const routes = {
         user: "/user", // relacionado com permissões
         locker: "/locker", // relacionado com permissões
         openLocker: (lockerId: string) => `/lockers/${lockerId}/unlock`
-    }
+    },
+
 }
 
 // usado pelo elemento Sidebar
