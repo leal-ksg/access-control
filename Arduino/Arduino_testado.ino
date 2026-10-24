@@ -61,7 +61,7 @@ const int RELAY_PIN = 4; // GPIO 4 conectado ao módulo relé
 const int RELAY_ON  = LOW;  // Sinal para armar o relé
 const int RELAY_OFF = HIGH; // Sinal de repouso (desarmado)
 
-const unsigned long TEMPO_ABERTURA = 800;
+const unsigned long TEMPO_ABERTURA = 2000;
 
 WiFiClientSecure espClient; // Usar cliente seguro com criptografia para a nuvem
 PubSubClient mqttClient(espClient);
