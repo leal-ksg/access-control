@@ -1,6 +1,8 @@
 import { LogOut, User } from "lucide-react"
 import { useAuth } from "../auth/AuthContext"
 import { prettyRole } from "../models/enums"
+import { Link } from "react-router-dom"
+import { routes } from "../routes/routes"
 
 export default function Header() {
     const { user, logout } = useAuth()
@@ -16,12 +18,10 @@ export default function Header() {
                 </div>
                 {user && (
                     <div className="flex items-center gap-10">
-                        <div className="flex items-center gap-2 rounded p-3">
-                            <span className="text-sm font-medium">
-                                {user?.name} {user?.surname}
-                            </span>
+                        <Link className="flex items-center gap-2 rounded p-3 hover:bg-white/20 text-sm font-medium" to={`${routes.users.path}/${user?.id}`}>
+                            <span>{user?.name} {user?.surname}</span>
                             <User size={iconSize} />
-                        </div>
+                        </Link>
 
                         <button
                             type="button"

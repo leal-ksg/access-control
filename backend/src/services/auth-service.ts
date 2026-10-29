@@ -18,6 +18,8 @@ export async function login(
 
   if (!isPasswordValid) throw new HttpError("Usuário ou senha incorretos");
 
+  if (!user.active) throw new HttpError("Usuário inativo");
+
   const { password: _, ...userWithoutPassword } = user;
 
   const token = jwt.sign(

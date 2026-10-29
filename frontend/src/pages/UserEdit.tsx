@@ -122,7 +122,6 @@ export default function UserEdit() {
             setSaving(true)
             await http.patch(`${routes.api.users}/${id}`, payload)
             navigate(routes.users.path)
-            navigate(-1)
         } catch (error) {
             console.error("Erro ao atualizar usuário:", error)
             setError("Não foi possível atualizar o usuário")

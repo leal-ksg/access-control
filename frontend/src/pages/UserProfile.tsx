@@ -13,11 +13,13 @@ import LockerCards from "../components/Cards/LockerCards";
 import ReturnButton from "../components/ReturnButton";
 import { getPermissionData } from "../utils/permissions";
 import Button from "../components/Button";
+import { useAuth } from "../auth/AuthContext";
 
 export default function UserProfile() {
     const { id } = useParams()
 
     const [user, setUser] = useState<User | null>(null)
+    const { user: loggedUser } = useAuth()
     const [loading, setLoading] = useState<boolean>(true)
     const [error, setError] = useState<string>("")
     const [lockers, setLockers] = useState<Locker[]>([])
@@ -86,22 +88,24 @@ export default function UserProfile() {
                         <Title texto={`${user.name} ${user?.surname}`} />
                         <div className="flex gap-5 text-center">
                             <Button to={`${routes.users.editPath}/${user.id}`} texto="Editar usuário" />
-                            <button
-                                type="button"
-                                onClick={switchStatus}
-                                disabled={saving}
-                                className={`w-50 rounded-full px-5 py-3 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50 hover:opacity-80 ${user.active
-                                    ? "bg-[var(--red)] text-white "
-                                    : "bg-[var(--green)] text-black"
-                                    }`}
-                            >
-                                {saving
-                                    ? "Alterando..."
-                                    : user.active
-                                        ? "Desativar"
-                                        : "Ativar"
-                                }
-                            </button>
+                            {loggedUser?.id !== user.id &&
+                                (<button
+                                    type="button"
+                                    onClick={switchStatus}
+                                    disabled={saving}
+                                    className={`w-50 rounded-full px-5 py-3 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50 hover:opacity-80 ${user.active
+                                        ? "bg-[var(--red)] text-white "
+                                        : "bg-[var(--green)] text-black"
+                                        }`}
+                                >
+                                    {saving
+                                        ? "Alterando..."
+                                        : user.active
+                                            ? "Desativar"
+                                            : "Ativar"
+                                    }
+                                </button>)
+                            }
                             <ReturnButton />
                         </div>
                         <div className="flex flex-col gap-2 ml-10 my-10">
@@ -111,13 +115,14 @@ export default function UserProfile() {
                             <CardData data={prettyDate(user.createdAt)} name="Criação" />
                         </div>
                         <Title texto="Lista de acessos permitidos" />
-                        {lockers
+                        {lockers.length > 0
                             ? (
                                 <LockerCards
                                     lockers={lockers}
                                 />
                             )
-                            : <p>Nenhum armário liberado.</p>}
+                            : <p className="text-[var(--red)] font-bold text-md">Nenhum armário liberado.</p>
+                        }
 
                     </>)
             }
