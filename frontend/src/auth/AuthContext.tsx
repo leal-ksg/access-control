@@ -27,7 +27,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 return
             }
 
-            setUser(JSON.parse(storedUser))
+            const parts = storedToken.split(".")
+            if (parts.length !== 3 || !parts[1]) {
+                limparDados()
+                return
+            }
+
+            const payloadB64 = parts[1]
+                .replace(/-/g, "+")
+                .replace(/_/g, "/")
+
+            const payload = JSON.parse(atob(payloadB64))
+
+            if (
+                typeof payload.exp !== "number" ||
+                payload.exp <= Math.floor(Date.now() / 1000)
+            ) {
+                limparDados()
+                return
+            }
+
+            setUser(JSON.parse(storedUser) as User)
             setToken(storedToken)
         }
         catch (error) {

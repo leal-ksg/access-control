@@ -1,6 +1,6 @@
-export default function Title({ texto }: { texto: string }) {
+export default function Title({ texto, marginless = false }: { texto: string, marginless?: boolean }) {
     return (
-        <h1 className="mb-6 text-2xl font-bold">
+        <h1 className={`text-2xl font-bold ${marginless ? "" : "mb-5"}`}>
             {texto}
         </h1>
     )

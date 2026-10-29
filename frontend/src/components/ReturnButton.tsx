@@ -7,9 +7,9 @@ export default function ReturnButton() {
     return (
         <button
             onClick={() => navigate(-1)}
-            className="mb-5 inline-flex items-center rounded-4xl gap-2 text-sm bg-[var(--color-primary)] py-3 px-5 text-white hover:bg-[var(--color-secondary)]"
+            className="inline-flex items-center rounded-4xl gap-2 text-sm bg-[var(--color-primary)] py-3 px-5 text-white hover:bg-[var(--color-secondary)]"
         >
-            <ArrowDownLeft />
+            <ArrowDownLeft size={18} />
             Retornar à página anterior
         </button>
     )

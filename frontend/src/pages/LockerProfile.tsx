@@ -12,6 +12,7 @@ import { prettyDoorState } from "../models/enums"
 import { prettyDate } from "../utils/dateFix"
 import UserCards from "../components/Cards/UserCards"
 import { getPermissionData } from "../utils/permissions"
+import Button from "../components/Button"
 
 export default function LockerProfile() {
     const { id } = useParams()
@@ -56,8 +57,11 @@ export default function LockerProfile() {
             : error
                 ? <ErrorElement error={error} />
                 : locker && (<>
-                    <ReturnButton />
                     <Title texto={locker.name} />
+                    <div className="flex gap-5 text-center">
+                        <Button to={routes.lockers.editPath} texto="Editar armário" />
+                        <ReturnButton />
+                    </div>
                     <div className="flex flex-col gap-2 ml-10 my-10">
                         <CardData data={locker.location} name="Local" />
                         <CardData data={prettyDoorState(locker.doorState)} name="Status" />

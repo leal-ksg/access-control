@@ -21,6 +21,7 @@ export default function UserProfile() {
     const [loading, setLoading] = useState<boolean>(true)
     const [error, setError] = useState<string>("")
     const [lockers, setLockers] = useState<Locker[]>([])
+    const [saving, setSaving] = useState<boolean>(false)
 
     async function getUser() {
         setLoading(true)
@@ -47,6 +48,24 @@ export default function UserProfile() {
         setLockers(lockers)
     }
 
+    async function switchStatus() {
+        if (!user) return;
+
+        const active = !user.active
+
+        try {
+            setSaving(true)
+            setError("")
+            await http.patch(`${routes.api.users}/${user.id}`, { active })
+            setUser((prev) => prev ? { ...prev, active } : prev)
+        } catch (error) {
+            console.error("Erro ao alterar status do usuário:", error)
+            setError("Não foi possível alterar o status do usuário")
+        } finally {
+            setSaving(false)
+        }
+    }
+
     useEffect(() => {
         if (!id) {
             setError("ID do usuário não informado")
@@ -58,26 +77,49 @@ export default function UserProfile() {
     }, [id])
 
     return (
-        <section className="h-full relative">
-            <Button to={routes.userEdit.path} texto="Editar usuário" />
-        {loading
-            ? <LoadingElement texto="página do usuário" />
-            : error
-                ? <ErrorElement error={error} />
-                : user && (<>
-                    <ReturnButton />
-                    <Title texto={`${user.name} ${user?.surname}`} />
-                    <div className="flex flex-col gap-2 ml-10 my-10">
-                        <CardData data={user.email} name="E-mail" />
-                        <CardData data={prettyRole(user.role)} name="Cargo" />
-                        <CardStatus status={user.active} />
-                        <CardData data={prettyDate(user.createdAt)} name="Criação" />
-                    </div>
-                    <Title texto="Lista de acessos permitidos" />
-                    <LockerCards
-                        lockers={lockers}
-                    />
-                </>)
-        }
-    </section>)
+        <>
+            {loading
+                ? <LoadingElement texto="página do usuário" />
+                : error
+                    ? <ErrorElement error={error} />
+                    : user && (<>
+                        <Title texto={`${user.name} ${user?.surname}`} />
+                        <div className="flex gap-5 text-center">
+                            <Button to={`${routes.users.editPath}/${user.id}`} texto="Editar usuário" />
+                            <button
+                                type="button"
+                                onClick={switchStatus}
+                                disabled={saving}
+                                className={`w-50 rounded-full px-5 py-3 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50 hover:opacity-80 ${user.active
+                                    ? "bg-[var(--red)] text-white "
+                                    : "bg-[var(--green)] text-black"
+                                    }`}
+                            >
+                                {saving
+                                    ? "Alterando..."
+                                    : user.active
+                                        ? "Desativar"
+                                        : "Ativar"
+                                }
+                            </button>
+                            <ReturnButton />
+                        </div>
+                        <div className="flex flex-col gap-2 ml-10 my-10">
+                            <CardData data={user.email} name="E-mail" />
+                            <CardData data={prettyRole(user.role)} name="Cargo" />
+                            <CardStatus status={user.active} />
+                            <CardData data={prettyDate(user.createdAt)} name="Criação" />
+                        </div>
+                        <Title texto="Lista de acessos permitidos" />
+                        {lockers
+                            ? (
+                                <LockerCards
+                                    lockers={lockers}
+                                />
+                            )
+                            : <p>Nenhum armário liberado.</p>}
+
+                    </>)
+            }
+        </>)
 }

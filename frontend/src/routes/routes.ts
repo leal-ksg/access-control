@@ -6,18 +6,14 @@ export const routes = {
     users: {
         path: "/usuarios",
         name: "Usuários",
-    },
-    userEdit:{
-         path: "/usuarios/editar",
-        name: "editar",
-    },
-    userCreate:{
-         path: "/usuarios/criar",
-        name: "Criar",
+        editPath: "/usuarios/editar",
+        createPath: "/usuarios/criar"
     },
     lockers: {
         path: "/armarios",
-        name: "Armários"
+        name: "Armários",
+        editPath: "/armarios/editar",
+        createPath: "/armarios/criar"
     },
     logs: {
         path: "/eventos",

@@ -1,13 +1,14 @@
 import { createBrowserRouter } from "react-router-dom";
-import RootLayout from "./layouts/RootLayout";
 import { routes } from "./routes/routes";
+
+import RootLayout from "./layouts/RootLayout";
+import RequireAuth from "./auth/RequireAuth";
 
 // páginas
 import Dashboard from "./pages/Dashboard";
 import Users from "./pages/Users";
 import Lockers from "./pages/Lockers";
 import Events from "./pages/Events";
-import RequireAuth from "./auth/RequireAuth";
 import Forbidden from "./pages/Forbidden";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
@@ -37,12 +38,11 @@ export const router = createBrowserRouter([
       { path: routes.dashboard.path, element: <Dashboard /> },
       { path: routes.users.path, element: <Users /> },
       { path: `${routes.users.path}/:id`, element: <UserProfile /> },
+      { path: `${routes.users.editPath}/:id`, element: <UserEdit /> },
+      { path: routes.users.createPath, element: <UserCreate /> },
       { path: `${routes.lockers.path}/:id`, element: <LockerProfile /> },
       { path: routes.lockers.path, element: <Lockers /> },
       { path: routes.logs.path, element: <Events /> },
-      {path: routes.userEdit.path, element: <UserEdit/>},
-      {path: routes.userCreate.path, element: <UserCreate/>},
-
     ]
   },
   {
