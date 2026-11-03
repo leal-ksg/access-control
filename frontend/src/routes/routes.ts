@@ -1,4 +1,5 @@
 export const routes = {
+    // frontend
     dashboard: {
         path: "/dashboard",
         name: "Dashboard"
@@ -27,18 +28,21 @@ export const routes = {
         path: "/proibido",
         name: "Proibido"
     },
+
+    // backend
     api: {
         login: "/auth/login",
-        users: "/users",
         docs: "/docs",
-        lockers: "/lockers",
         events: "/events",
         permissions: "/permissions",
-        user: "/user", // relacionado com permissões
-        locker: "/locker", // relacionado com permissões
+
+        users: "/users",
+        userPerms: "/user",
+
+        lockers: "/lockers",
+        lockerPerms: "/locker",
         openLocker: (lockerId: string) => `/lockers/${lockerId}/unlock`
     },
-
 }
 
 // usado pelo elemento Sidebar

@@ -53,7 +53,7 @@ export default function Select({ id, label, options, value, onChange, placeholde
                     onKeyDown={(e) => {
                         if (e.key === "Escape") setOpen(false);
                     }}
-                    className={`flex w-full items-center justify-between border border-slate-200 bg-white px-4 py-3 text-left text-lg ${open ? "rounded-t-3xl rounded-b-none" : "rounded-full"}`}
+                    className={`flex w-full items-center justify-between border-2 border-slate-300 bg-white px-4 py-3 text-left text-lg ${open ? "rounded-t-3xl rounded-b-none" : "rounded-full"}`}
                 >
                     <span>{selected ? selected.label : placeholder}</span>
                     <ChevronDown
@@ -64,7 +64,7 @@ export default function Select({ id, label, options, value, onChange, placeholde
 
                 {open && (
                     <ul
-                        className="absolute left-0 w-full overflow-hidden rounded-b-3xl border border-t-0 border-slate-200 bg-white"
+                        className="absolute left-0 w-full overflow-hidden rounded-b-3xl border-2 border-t-0 border-slate-300 bg-white"
                     >
                         {options.map((opt) => (
                             <li

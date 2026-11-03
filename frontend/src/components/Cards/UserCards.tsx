@@ -2,9 +2,15 @@ import { Link } from "react-router-dom";
 import { prettyRole } from "../../models/enums";
 import { User } from "../../models/interfaces";
 import { routes } from "../../routes/routes";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Trash } from "lucide-react";
+import { confirmAction } from "../../utils/confirmAction";
 
-export default function UserCards({ users }: { users: User[] }) {
+interface UserCardProps {
+    users: User[]
+    onRemove?: (id: string) => void
+}
+
+export default function UserCards({ users, onRemove }: UserCardProps) {
     return (
         <div className="grid grid-cols-[repeat(auto-fit,minmax(250px,350px))] gap-5">
             {users.map(user => (
@@ -31,6 +37,21 @@ export default function UserCards({ users }: { users: User[] }) {
                         Ver perfil
                         <ArrowUpRight className="absolute right-3" />
                     </Link>
+
+                    {onRemove && (
+                        <button
+                            type="button"
+                            onClick={() => {
+                                if (confirmAction("Deseja realmente remover o acesso?")) {
+                                    onRemove(user.id)
+                                }
+                            }}
+                            className="flex w-full items-center justify-center gap-2 rounded-4xl bg-[var(--red)] p-3 text-sm font-medium text-white hover:opacity-80"
+                        >
+                            <Trash size={18} />
+                            Remover acesso
+                        </button>
+                    )}
                 </div>
             ))}
         </div>

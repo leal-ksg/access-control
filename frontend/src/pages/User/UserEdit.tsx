@@ -1,15 +1,16 @@
 import { ChangeEvent, FormEvent, useEffect, useState } from "react"
-import Input from "../components/Input"
-import Select from "../components/Select"
-import Title from "../components/Title"
-import ReturnButton from "../components/ReturnButton"
+import Input from "../../components/Input"
+import Select from "../../components/Select"
+import Title from "../../components/Title"
+import ReturnButton from "../../components/ReturnButton"
 import { useNavigate, useParams } from "react-router-dom"
-import { User } from "../models/interfaces"
-import { prettyRole, UserRole } from "../models/enums"
-import { routes } from "../routes/routes"
-import { http } from "../api/http"
-import LoadingElement from "../components/Loading"
-import ErrorElement from "../components/Error"
+import { User } from "../../models/interfaces"
+import { prettyRole, UserRole } from "../../models/enums"
+import { routes } from "../../routes/routes"
+import { http } from "../../api/http"
+import LoadingElement from "../../components/Loading"
+import ErrorElement from "../../components/Error"
+import SaveButton from "../../components/SaveButton"
 
 interface FormData {
     name: string
@@ -205,21 +206,9 @@ export default function UserEdit() {
                 />
             </div>
 
-            {error && (
-                <div className="text-center">
-                    <ErrorElement error={error} />
-                </div>
-            )}
+            {error && (<ErrorElement error={error} centered />)}
 
-            <div className="flex justify-center">
-                <button
-                    type="submit"
-                    disabled={saving}
-                    className="w-full max-w-xs rounded-full bg-slate-900 px-6 py-3 text-lg font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                    {saving ? "Salvando..." : "Salvar alterações"}
-                </button>
-            </div>
+            <SaveButton saving={saving}/>
         </form>
     </>)
 }   

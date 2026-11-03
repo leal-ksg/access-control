@@ -14,7 +14,7 @@ export default function Input({ label, required, id, ...props }: InputProps) {
             <input
                 id={id}
                 required={required}
-                className="w-full rounded-full border border-slate-200 p-3 text-lg"
+                className="w-full rounded-full border-2 border-slate-300 px-5 py-3 text-lg"
                 {...props}
             />
         </div>

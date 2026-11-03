@@ -1,13 +1,14 @@
 import { ChangeEvent, FormEvent, useState } from "react"
-import Input from "../components/Input"
-import Select from "../components/Select"
-import Title from "../components/Title"
-import ReturnButton from "../components/ReturnButton"
-import { prettyRole, UserRole } from "../models/enums"
+import Input from "../../components/Input"
+import Select from "../../components/Select"
+import Title from "../../components/Title"
+import ReturnButton from "../../components/ReturnButton"
+import { prettyRole, UserRole } from "../../models/enums"
 import { useNavigate } from "react-router-dom"
-import { routes } from "../routes/routes"
-import { http } from "../api/http"
-import ErrorElement from "../components/Error"
+import { routes } from "../../routes/routes"
+import { http } from "../../api/http"
+import ErrorElement from "../../components/Error"
+import SaveButton from "../../components/SaveButton"
 
 interface FormData {
     name: string
@@ -82,10 +83,6 @@ export default function UserCreate() {
         }
     }
 
-    if (error) {
-        return <ErrorElement error={error} />
-    }
-
     return (
         <>
             <Title texto="Criar um usuário" />
@@ -151,21 +148,9 @@ export default function UserCreate() {
                     />
                 </div>
 
-                {error && (
-                    <p className="text-center text-red-500" role="alert">
-                        {error}
-                    </p>
-                )}
+                {error && <ErrorElement error={error} />}
 
-                <div className="flex justify-center">
-                    <button
-                        type="submit"
-                        disabled={saving}
-                        className="w-full max-w-xs rounded-full bg-slate-900 px-6 py-3 text-lg font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                        {saving ? "Criando..." : "Criar usuário"}
-                    </button>
-                </div>
+                <SaveButton saving={saving} />
             </form>
         </>
     )
