@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { DoorState, prettyDoorState } from "../../models/enums";
 import { Locker } from "../../models/interfaces";
 import { routes } from "../../routes/routes";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Circle } from "lucide-react";
 
 interface LockerCardProps {
     lockers: Locker[],
@@ -17,12 +17,17 @@ export default function LockerCards({ lockers, unlock }: LockerCardProps) {
                     key={locker.id}
                     className="rounded-2xl bg-[var(--card-color)] p-5 flex flex-col gap-2"
                 >
-                    <h2 className="font-bold text-lg">
-                        {locker.name}
-                    </h2>
+                    <div className="flex justify-between items-center">
+                        <h2 className="font-bold text-lg">
+                            {locker.name}
+                        </h2>
+                        <Circle className="stroke-0 fill-[var(--red)]" />
+                    </div>
+
                     <span className="text-sm">
                         Local: {locker.location}
                     </span>
+
                     <div className="flex flex-row gap-1 items-center text-sm">
                         <span>
                             Status:

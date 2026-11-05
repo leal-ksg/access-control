@@ -6,13 +6,13 @@ import { LOCKER_UNLOCKED_EVENT, UNLOCK_LOCKER_TOPIC } from "../constants";
 import { validateLockerPermission } from "./locker-permission-service";
 
 export async function getLockers(): Promise<Locker[]> {
-  const lockers = await prisma.locker.findMany();
-
+  const lockers = await prisma.locker.findMany({ include: { device: true } });
   return lockers;
 }
 
 export async function getLockerById(id: string): Promise<Locker | null> {
   const locker = await prisma.locker.findUnique({
+    include: { device: true },
     where: { id },
   });
 

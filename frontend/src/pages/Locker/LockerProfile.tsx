@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { Locker, User } from "../../models/interfaces"
 import { routes } from "../../routes/routes"
 import { http } from "../../api/http"
@@ -13,10 +13,11 @@ import { prettyDate } from "../../utils/dateFix"
 import UserCards from "../../components/Cards/UserCards"
 import { getPermissionData } from "../../utils/permissions"
 import Button from "../../components/Button"
-import { Plus, X } from "lucide-react"
+import { Plus, Trash, X } from "lucide-react"
 
 export default function LockerProfile() {
     const { id } = useParams()
+    const navigate=useNavigate()
 
     const [locker, setLocker] = useState<Locker | null>(null)
     const [loading, setLoading] = useState<boolean>(true)
@@ -96,7 +97,7 @@ export default function LockerProfile() {
         }
     }
 
-    async function remove(id: string) {
+    async function removePermission(id: string) {
         if (!id || !locker) return;
 
         setSavingPermission(true)
@@ -118,6 +119,21 @@ export default function LockerProfile() {
             setError("Não foi possível remover a permissão")
         } finally {
             setSavingPermission(false)
+        }
+    }
+
+    async function deleteLocker() {
+        if (!locker) return;
+
+        setError("")
+
+        try {
+            await http.delete(`${routes.api.lockers}/${locker.id}`)
+            alert("Armário deletado")
+            navigate(routes.lockers.path)
+        } catch (error: unknown) {
+            console.error("Erro ao deletar armário:", error)
+            setError("Não foi possível deletar o armário")
         }
     }
 
@@ -144,10 +160,19 @@ export default function LockerProfile() {
     return (<>
         <Title texto={locker.name} />
 
-        <div className="flex gap-5 text-center">
+        <div className="flex gap-5 text-center mb-5">
             <Button to={`${routes.lockers.editPath}/${locker.id}`} texto="Editar armário" />
+            <button
+                onClick={() => deleteLocker()}
+                className="flex items-center justify-center gap-2 rounded-4xl bg-[var(--red)] px-10 text-sm font-medium text-white hover:opacity-80"
+            >
+                <Trash size={18} />
+                Deletar armário
+            </button>
             <ReturnButton />
         </div>
+
+        {error&&(<ErrorElement error={error}/>)}
 
         <div className="flex flex-col gap-2 ml-10 my-10">
             <CardData data={locker.location} name="Local" />
@@ -170,7 +195,7 @@ export default function LockerProfile() {
             </div>
 
             {permittedUsers.length > 0
-                ? <UserCards users={permittedUsers} onRemove={remove} />
+                ? <UserCards users={permittedUsers} onRemove={removePermission} />
                 : <p className="text-[var(--red)] font-bold text-md">Nenhum usuário liberado.</p>
             }
 

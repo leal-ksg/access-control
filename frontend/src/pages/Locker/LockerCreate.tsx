@@ -39,7 +39,8 @@ export default function LockerCreate() {
         try {
             setSaving(true)
             await http.post(routes.api.lockers, form)
-            // navigate(routes.lockers.path)
+            alert("Armário cadastrado com sucesso!")
+            navigate(routes.lockers.path)
         } catch (error) {
             console.error("Erro ao criar novo armário:", error)
             setError("Não foi possível criar o armário")

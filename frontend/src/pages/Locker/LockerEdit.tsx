@@ -44,7 +44,6 @@ export default function LockerEdit() {
                 const { data } = await http.get<Locker>(`${routes.api.lockers}/${id}`)
 
                 setLocker(data)
-
                 setForm({
                     name: data.name,
                     location: data.location
@@ -81,6 +80,8 @@ export default function LockerEdit() {
         try {
             setSaving(true)
             await http.patch(`${routes.api.lockers}/${id}`, form)
+            alert("Armário cadastrado com sucesso!")
+            navigate(routes.lockers.path)
         } catch (error) {
             console.error("Erro ao atualizar armário:", error)
             setError("Não foi possível atualizar o armário")
