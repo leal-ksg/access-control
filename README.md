@@ -39,8 +39,7 @@ Este projeto está licenciado sob a [licença MIT](./LICENSE).
 - JSON Web Token (JWT)
 - MQTT
 - Node.js
-- pg (PostgreSQL)
-- PostgreSQL
+- pg (driver PostgreSQL)
 - Prisma
 - Swagger UI
 - TypeScript
@@ -54,6 +53,7 @@ Este projeto está licenciado sob a [licença MIT](./LICENSE).
 - React
 - React Dom
 - React Router Dom
+- Sonner
 - Tailwind CSS
 - TypeScript
 - Vite

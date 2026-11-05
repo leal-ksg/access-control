@@ -14,10 +14,12 @@ import UserCards from "../../components/Cards/UserCards"
 import { getPermissionData } from "../../utils/permissions"
 import Button from "../../components/Button"
 import { Plus, Trash, X } from "lucide-react"
+import { toast } from "sonner"
+import { confirmAction } from "../../utils/confirmAction"
 
 export default function LockerProfile() {
     const { id } = useParams()
-    const navigate=useNavigate()
+    const navigate = useNavigate()
 
     const [locker, setLocker] = useState<Locker | null>(null)
     const [loading, setLoading] = useState<boolean>(true)
@@ -68,8 +70,11 @@ export default function LockerProfile() {
         }
     }
 
-    async function allow(id: string) {
+    async function allowAccess(id: string) {
         if (!id || !locker) return;
+
+        const confirmed = await confirmAction("Deseja realmente permitir o acesso?")
+        if (!confirmed) return;
 
         setSavingPermission(true)
         setError("")
@@ -87,7 +92,7 @@ export default function LockerProfile() {
             ]
 
             await http.patch(`${routes.api.permissions}/${locker.id}`, permissions)
-
+            toast.success("Usuário liberado")
             await getPermittedUsers()
         } catch (error: unknown) {
             console.error("Erro ao adicionar permissão:", error);
@@ -97,8 +102,11 @@ export default function LockerProfile() {
         }
     }
 
-    async function removePermission(id: string) {
+    async function revokeAccess(id: string) {
         if (!id || !locker) return;
+
+        const confirmed = await confirmAction("Deseja realmente remover o acesso?")
+        if (!confirmed) return;
 
         setSavingPermission(true)
         setError("")
@@ -112,7 +120,7 @@ export default function LockerProfile() {
                 }))
 
             await http.patch(`${routes.api.permissions}/${locker.id}`, permissions)
-
+            toast.warning("Usuário removido")
             await getPermittedUsers()
         } catch (error: unknown) {
             console.error("Erro ao remover permissão:", error)
@@ -125,11 +133,14 @@ export default function LockerProfile() {
     async function deleteLocker() {
         if (!locker) return;
 
+        const confirmed = await confirmAction("Deseja realmente deletar o armário?")
+        if (!confirmed) return;
+
         setError("")
 
         try {
             await http.delete(`${routes.api.lockers}/${locker.id}`)
-            alert("Armário deletado")
+            toast.warning("Armário deletado")
             navigate(routes.lockers.path)
         } catch (error: unknown) {
             console.error("Erro ao deletar armário:", error)
@@ -172,12 +183,15 @@ export default function LockerProfile() {
             <ReturnButton />
         </div>
 
-        {error&&(<ErrorElement error={error}/>)}
+        {error && (<ErrorElement error={error} />)}
 
         <div className="flex flex-col gap-2 ml-10 my-10">
             <CardData data={locker.location} name="Local" />
             <CardData data={prettyDoorState(locker.doorState)} name="Status" />
             <CardData data={prettyDate(locker.createdAt)} name="Criação" />
+            {locker.device && (
+                <CardData data={locker.device.macAddress} name="Dispositivo" />
+            )}
         </div>
 
         <div className="flex flex-col gap-5">
@@ -195,7 +209,7 @@ export default function LockerProfile() {
             </div>
 
             {permittedUsers.length > 0
-                ? <UserCards users={permittedUsers} onRemove={removePermission} />
+                ? <UserCards users={permittedUsers} onRemove={revokeAccess} />
                 : <p className="text-[var(--red)] font-bold text-md">Nenhum usuário liberado.</p>
             }
 
@@ -235,7 +249,7 @@ export default function LockerProfile() {
                                             </div>
                                             <button
                                                 type="button"
-                                                onClick={() => allow(user.id)}
+                                                onClick={() => allowAccess(user.id)}
                                                 disabled={savingPermission}
                                                 className="flex flex-row items-center gap-2 rounded-lg bg-[var(--color-primary)] px-4 py-2 text-white hover:bg-[var(--color-tertiary)] disabled:opacity-50"
                                             >

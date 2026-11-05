@@ -15,6 +15,7 @@ import { getPermissionData } from "../../utils/permissions";
 import Button from "../../components/Button";
 import { useAuth } from "../../auth/AuthContext";
 import { confirmAction } from "../../utils/confirmAction";
+import { toast } from "sonner";
 
 export default function UserProfile() {
     const { id } = useParams()
@@ -54,7 +55,8 @@ export default function UserProfile() {
     async function switchStatus() {
         if (!user) return;
 
-        if (user.active && !confirmAction("Deseja realmente desativar o usuário?")) return;
+        const confirmed = await confirmAction(`Deseja realmente ${user.active ? "des" : ""}ativar o usuário?`)
+        if (!confirmed) return
 
         const active = !user.active
 
@@ -62,7 +64,13 @@ export default function UserProfile() {
             setSaving(true)
             setError("")
             await http.patch(`${routes.api.users}/${user.id}`, { active })
-            setUser((prev) => prev ? { ...prev, active } : prev)
+            active
+                ? toast.success("Usuário ativado")
+                : toast.warning("Usuário desativado")
+            setUser((prev) => prev
+                ? { ...prev, active }
+                : prev
+            )
         } catch (error) {
             console.error("Erro ao alterar status do usuário:", error)
             setError("Não foi possível alterar o status do usuário")

@@ -12,12 +12,12 @@ interface SelectProps {
     label: string;
     options: Option[];
     value: string;
-    onChange: (value: string) => void;
+    onChange: (name: string, value: string) => void;
     placeholder?: string;
     required?: boolean;
 }
 
-export default function Select({ id, label, options, value, onChange, placeholder = "Selecione" }: SelectProps) {
+export default function Select({ id, name, label, options, value, onChange, placeholder = "Selecione" }: SelectProps) {
     const [open, setOpen] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
 
@@ -35,7 +35,7 @@ export default function Select({ id, label, options, value, onChange, placeholde
     }, []);
 
     function handleSelect(optionValue: string) {
-        onChange(optionValue);
+        onChange(name, optionValue);
         setOpen(false);
     }
 

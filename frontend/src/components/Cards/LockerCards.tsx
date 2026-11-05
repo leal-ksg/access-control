@@ -21,7 +21,7 @@ export default function LockerCards({ lockers, unlock }: LockerCardProps) {
                         <h2 className="font-bold text-lg">
                             {locker.name}
                         </h2>
-                        <Circle className="stroke-0 fill-[var(--red)]" />
+                        <Circle className="stroke-0" fill={locker.device?.isOnline ? "var(--online)" : "var(--offline)"} />
                     </div>
 
                     <span className="text-sm">
@@ -40,7 +40,7 @@ export default function LockerCards({ lockers, unlock }: LockerCardProps) {
                         </span>
                     </div>
 
-                    {unlock && (
+                    {unlock && locker.device?.isOnline && (
                         <button
                             className="border rounded-4xl font-medium bg-[var(--color-primary)] hover:bg-[var(--color-secondary)] text-white py-4"
                             onClick={() => unlock(locker.id)}

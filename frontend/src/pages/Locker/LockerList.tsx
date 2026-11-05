@@ -10,6 +10,7 @@ import { useAuth } from "../../auth/AuthContext";
 import { getPermissionData } from "../../utils/permissions";
 import Button from "../../components/Button";
 import { UserRole } from "../../models/enums";
+import { toast } from "sonner";
 
 export default function LockerList() {
     const [lockers, setLockers] = useState<Locker[]>([])
@@ -52,6 +53,7 @@ export default function LockerList() {
     async function unlockLocker(lockerId: string) {
         try {
             await http.post(routes.api.openLocker(lockerId))
+            toast.success("Armário desbloqueado")
             await getLockers()
         } catch (error: unknown) {
             console.error("Erro ao desbloquear armário:", error)

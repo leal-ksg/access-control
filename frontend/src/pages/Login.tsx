@@ -65,6 +65,7 @@ export default function Login() {
                     required
                     value={values.email}
                     onChange={updateField}
+                    autoComplete="username"
                 />
                 <Input
                     label={"Senha"}
@@ -75,6 +76,7 @@ export default function Login() {
                     required
                     value={values.password}
                     onChange={updateField}
+                    autoComplete="current-password"
                 />
                 {!loading && error && (
                     <p className="text-md text-[var(--red)]">

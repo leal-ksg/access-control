@@ -9,6 +9,7 @@ import { routes } from "../../routes/routes"
 import { http } from "../../api/http"
 import ErrorElement from "../../components/Error"
 import SaveButton from "../../components/SaveButton"
+import { toast } from "sonner"
 
 interface FormData {
     name: string
@@ -47,10 +48,10 @@ export default function UserCreate() {
         }))
     }
 
-    function handleRoleChange(value: string) {
+    function handleRoleChange(name: string, value: string) {
         setForm((prev) => ({
             ...prev,
-            role: value as UserRole
+            [name]: value as UserRole
         }))
     }
 
@@ -74,6 +75,7 @@ export default function UserCreate() {
         try {
             setSaving(true)
             await http.post(routes.api.users, payload)
+            toast.success("Usuário cadastrado")
             navigate(routes.users.path)
         } catch (error) {
             console.error("Erro ao criar novo usuário:", error)
@@ -116,6 +118,7 @@ export default function UserCreate() {
                         value={form.email}
                         onChange={handleChange}
                         required
+                        autoComplete="username"
                     />
                     <Select
                         id="role"
@@ -135,6 +138,7 @@ export default function UserCreate() {
                         value={form.password}
                         onChange={handleChange}
                         required
+                        autoComplete="new-password"
                     />
                     <Input
                         id="passwordConfirm"
@@ -145,6 +149,7 @@ export default function UserCreate() {
                         value={form.passwordConfirm}
                         onChange={handleChange}
                         required
+                        autoComplete="new-password"
                     />
                 </div>
 

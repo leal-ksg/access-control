@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, useState } from "react"
+import { ChangeEvent, FormEvent, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { http } from "../../api/http"
 import { routes } from "../../routes/routes"
@@ -7,20 +7,26 @@ import Title from "../../components/Title"
 import ReturnButton from "../../components/ReturnButton"
 import Input from "../../components/Input"
 import SaveButton from "../../components/SaveButton"
+import { Device } from "../../models/interfaces"
+import Select from "../../components/Select"
+import { toast } from "sonner"
 
 interface FormData {
     name: string
     location: string
+    deviceId: string
 }
 
 export default function LockerCreate() {
     const navigate = useNavigate()
     const [saving, setSaving] = useState<boolean>(false)
     const [error, setError] = useState<string>("")
+    const [devices, setDevices] = useState<Device[]>([])
 
     const [form, setForm] = useState<FormData>({
         name: "",
         location: "",
+        deviceId: ""
     })
 
     function handleChange(e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
@@ -32,14 +38,27 @@ export default function LockerCreate() {
         }))
     }
 
+    function handleSelectChange(name: string, value: string) {
+        setForm(prev => ({
+            ...prev,
+            [name]: value
+        }))
+    }
+
     async function handleSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault()
         setError("")
 
+        const payload = {
+            name: form.name,
+            location: form.location,
+            deviceId: form.deviceId || null
+        }
+
         try {
             setSaving(true)
-            await http.post(routes.api.lockers, form)
-            alert("Armário cadastrado com sucesso!")
+            await http.post(routes.api.lockers, payload)
+            toast.success("Armário cadastrado com sucesso!")
             navigate(routes.lockers.path)
         } catch (error) {
             console.error("Erro ao criar novo armário:", error)
@@ -48,6 +67,22 @@ export default function LockerCreate() {
             setSaving(false)
         }
     }
+
+    useEffect(() => {
+        async function getDevices() {
+            try {
+                const { data } = await http.get<Device[]>(routes.api.devices)
+                setDevices(data)
+            } catch (error) {
+                console.error("Erro ao carregar dispositivos:", error)
+                setError("Não foi possível carregar os dispositivos")
+            }
+        }
+
+        getDevices()
+
+        console.log(devices)
+    }, [])
 
     return (<>
         <Title texto="Criar um armário" />
@@ -71,6 +106,20 @@ export default function LockerCreate() {
                     value={form.location}
                     onChange={handleChange}
                     required
+                />
+                <Select
+                    id="deviceId"
+                    name="deviceId"
+                    label="Dispostivo:"
+                    value={form.deviceId}
+                    onChange={handleSelectChange}
+                    options={[
+                        { value: "", label: "Nenhum dispositivo" },
+                        ...devices.map(d => ({
+                            value: d.id,
+                            label: `${d.macAddress} ${d.isOnline ? "(ON)" : "(OFF)"}`
+                        }))
+                    ]}
                 />
             </div>
 

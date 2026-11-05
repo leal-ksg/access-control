@@ -17,6 +17,7 @@ export interface Locker {
     deviceId: string | null
     doorState: DoorState
     createdAt: string
+    device?: Device
 }
 
 export interface AuthContextData {
@@ -61,4 +62,13 @@ export interface LockerPermission {
     userId: string
     createdAt: string
     expiresAt: string | null
+}
+
+export interface Device {
+    id: string
+    deviceHash: string
+    macAddress: string
+    isOnline: boolean
+    lastSeen: string
+    createdAt: string
 }

@@ -11,6 +11,7 @@ import { http } from "../../api/http"
 import LoadingElement from "../../components/Loading"
 import ErrorElement from "../../components/Error"
 import SaveButton from "../../components/SaveButton"
+import { toast } from "sonner"
 
 interface FormData {
     name: string
@@ -88,10 +89,10 @@ export default function UserEdit() {
         }))
     }
 
-    function handleRoleChange(value: string) {
+    function handleRoleChange(name: string, value: string) {
         setForm((prev) => ({
             ...prev,
-            role: value as UserRole
+            [name]: value as UserRole
         }))
     }
 
@@ -122,6 +123,7 @@ export default function UserEdit() {
         try {
             setSaving(true)
             await http.patch(`${routes.api.users}/${id}`, payload)
+            toast.success("Usuário alterado")
             navigate(routes.users.path)
         } catch (error) {
             console.error("Erro ao atualizar usuário:", error)
@@ -176,6 +178,7 @@ export default function UserEdit() {
                     value={form.email}
                     onChange={handleChange}
                     required
+                    autoComplete="username"
                 />
                 <Select
                     id="role"
@@ -194,6 +197,7 @@ export default function UserEdit() {
                     placeholder="Deixe em branco para manter a atual"
                     value={form.password}
                     onChange={handleChange}
+                    autoComplete="new-password"
                 />
                 <Input
                     id="passwordConfirm"
@@ -203,12 +207,13 @@ export default function UserEdit() {
                     placeholder="Confirme a nova senha"
                     value={form.passwordConfirm}
                     onChange={handleChange}
+                    autoComplete="new-password"
                 />
             </div>
 
             {error && (<ErrorElement error={error} centered />)}
 
-            <SaveButton saving={saving}/>
+            <SaveButton saving={saving} />
         </form>
     </>)
 }   

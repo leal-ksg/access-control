@@ -41,7 +41,9 @@ export const routes = {
 
         lockers: "/lockers",
         lockerPerms: "/locker",
-        openLocker: (lockerId: string) => `/lockers/${lockerId}/unlock`
+        openLocker: (lockerId: string) => `/lockers/${lockerId}/unlock`,
+
+        devices: "/devices/unlinked"
     },
 }
 

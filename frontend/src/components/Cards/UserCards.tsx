@@ -41,11 +41,7 @@ export default function UserCards({ users, onRemove }: UserCardProps) {
                     {onRemove && (
                         <button
                             type="button"
-                            onClick={() => {
-                                if (confirmAction("Deseja realmente remover o acesso?")) {
-                                    onRemove(user.id)
-                                }
-                            }}
+                            onClick={() => onRemove(user.id)}
                             className="flex w-full items-center justify-center gap-2 rounded-4xl bg-[var(--red)] p-3 text-sm font-medium text-white hover:opacity-80"
                         >
                             <Trash size={18} />

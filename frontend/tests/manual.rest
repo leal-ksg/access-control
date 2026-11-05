@@ -4,6 +4,7 @@
 @armarios = {{baseUrl}}/lockers
 @eventos = {{baseUrl}}/events
 @permissoes = {{baseUrl}}/permissions
+@dispositivos = {{baseUrl}}/devices/unlinked
 
 @email = {{$dotenv email}}
 @password = {{$dotenv password}}
@@ -42,4 +43,8 @@ Authorization: Bearer {{Login.response.body.token}}
 
 ### permissões armário
 GET {{permissoes}}/locker/{{locker}}
+Authorization: Bearer {{Login.response.body.token}}
+
+### dispositivos disponíveis
+GET {{dispositivos}}
 Authorization: Bearer {{Login.response.body.token}}
