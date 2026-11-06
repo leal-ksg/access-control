@@ -34,7 +34,7 @@ export async function upsertPermissions(req: Request, res: Response) {
 
   await lockerPermissionService.upsertPermissions(
     lockerId,
-    req.user?.id!,
+    req.user!,
     req.body,
   );
 

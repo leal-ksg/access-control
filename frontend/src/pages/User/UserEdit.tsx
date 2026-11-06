@@ -3,7 +3,7 @@ import Input from "../../components/Input"
 import Select from "../../components/Select"
 import Title from "../../components/Title"
 import ReturnButton from "../../components/ReturnButton"
-import { useNavigate, useParams } from "react-router-dom"
+import { Navigate, useNavigate, useParams } from "react-router-dom"
 import { User } from "../../models/interfaces"
 import { prettyRole, UserRole } from "../../models/enums"
 import { routes } from "../../routes/routes"
@@ -12,6 +12,8 @@ import LoadingElement from "../../components/Loading"
 import ErrorElement from "../../components/Error"
 import SaveButton from "../../components/SaveButton"
 import { toast } from "sonner"
+import { useAuth } from "../../auth/AuthContext"
+import { notifyError } from "../../utils/notifyError"
 
 interface FormData {
     name: string
@@ -30,6 +32,9 @@ const roles = Object.values(UserRole).map((role) => ({
 export default function UserEdit() {
     const { id } = useParams()
     const navigate = useNavigate()
+    const { user: loggedUser } = useAuth()
+    const isAdmin = loggedUser?.role === UserRole.ADMIN
+    const canEdit = isAdmin || loggedUser?.id === id
 
     const [user, setUser] = useState<User | null>(null)
     const [loading, setLoading] = useState<boolean>(true)
@@ -46,6 +51,8 @@ export default function UserEdit() {
     })
 
     useEffect(() => {
+        if (!canEdit) return
+
         async function getUser() {
             if (!id) {
                 setError("ID do usuário não informado")
@@ -78,7 +85,7 @@ export default function UserEdit() {
         }
 
         getUser()
-    }, [id])
+    }, [id, canEdit])
 
     function handleChange(e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
         const { name, value } = e.target
@@ -116,7 +123,7 @@ export default function UserEdit() {
             name: form.name,
             surname: form.surname,
             email: form.email,
-            role: form.role,
+            ...(isAdmin ? { role: form.role } : {}),
             ...(form.password ? { password: form.password } : {})
         }
 
@@ -124,13 +131,16 @@ export default function UserEdit() {
             setSaving(true)
             await http.patch(`${routes.api.users}/${id}`, payload)
             toast.success("Usuário alterado")
-            navigate(routes.users.path)
+            navigate(isAdmin ? routes.users.path : `${routes.users.path}/${id}`)
         } catch (error) {
-            console.error("Erro ao atualizar usuário:", error)
-            setError("Não foi possível atualizar o usuário")
+            notifyError(error, "Não foi possível atualizar o usuário")
         } finally {
             setSaving(false)
         }
+    }
+
+    if (!canEdit) {
+        return <Navigate to={routes.forbidden.path} replace />
     }
 
     if (loading) {
@@ -180,15 +190,17 @@ export default function UserEdit() {
                     required
                     autoComplete="username"
                 />
-                <Select
-                    id="role"
-                    name="role"
-                    label="Nível de acesso"
-                    options={roles}
-                    value={form.role}
-                    onChange={handleRoleChange}
-                    required
-                />
+                {isAdmin && (
+                    <Select
+                        id="role"
+                        name="role"
+                        label="Nível de acesso"
+                        options={roles}
+                        value={form.role}
+                        onChange={handleRoleChange}
+                        required
+                    />
+                )}
                 <Input
                     id="password"
                     name="password"

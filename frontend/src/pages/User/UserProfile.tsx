@@ -7,7 +7,7 @@ import Title from "../../components/Title";
 import ErrorElement from "../../components/Error";
 import { CardData, CardStatus } from "../../components/Cards/CardData";
 import { prettyDate } from "../../utils/dateFix";
-import { prettyRole } from "../../models/enums";
+import { prettyRole, UserRole } from "../../models/enums";
 import LoadingElement from "../../components/Loading";
 import LockerCards from "../../components/Cards/LockerCards";
 import ReturnButton from "../../components/ReturnButton";
@@ -16,6 +16,7 @@ import Button from "../../components/Button";
 import { useAuth } from "../../auth/AuthContext";
 import { confirmAction } from "../../utils/confirmAction";
 import { toast } from "sonner";
+import { notifyError } from "../../utils/notifyError";
 
 export default function UserProfile() {
     const { id } = useParams()
@@ -26,6 +27,8 @@ export default function UserProfile() {
     const [error, setError] = useState<string>("")
     const [lockers, setLockers] = useState<Locker[]>([])
     const [saving, setSaving] = useState<boolean>(false)
+    const isAdmin = loggedUser?.role === UserRole.ADMIN
+    const isSelf = loggedUser?.id === id
 
     async function getUser() {
         setLoading(true)
@@ -62,7 +65,6 @@ export default function UserProfile() {
 
         try {
             setSaving(true)
-            setError("")
             await http.patch(`${routes.api.users}/${user.id}`, { active })
             active
                 ? toast.success("Usuário ativado")
@@ -72,8 +74,7 @@ export default function UserProfile() {
                 : prev
             )
         } catch (error) {
-            console.error("Erro ao alterar status do usuário:", error)
-            setError("Não foi possível alterar o status do usuário")
+            notifyError(error, "Não foi possível alterar o status do usuário")
         } finally {
             setSaving(false)
         }
@@ -106,9 +107,11 @@ export default function UserProfile() {
             <Title texto={`${user.name} ${user?.surname}`} />
 
             <div className="flex flex-wrap gap-3 sm:gap-5 text-center">
-                <Button to={`${routes.users.editPath}/${user.id}`} texto="Editar usuário" />
+                {(isAdmin || isSelf) && (
+                    <Button to={`${routes.users.editPath}/${user.id}`} texto="Editar usuário" />
+                )}
                 {/* botão para desativar outros usuários */}
-                {loggedUser?.id !== user.id &&
+                {isAdmin && !isSelf &&
                     (<button
                         type="button"
                         onClick={switchStatus}

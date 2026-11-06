@@ -10,6 +10,7 @@ import { http } from "../../api/http"
 import ErrorElement from "../../components/Error"
 import SaveButton from "../../components/SaveButton"
 import { toast } from "sonner"
+import { notifyError } from "../../utils/notifyError"
 
 interface FormData {
     name: string
@@ -78,8 +79,7 @@ export default function UserCreate() {
             toast.success("Usuário cadastrado")
             navigate(routes.users.path)
         } catch (error) {
-            console.error("Erro ao criar novo usuário:", error)
-            setError("Não foi possível criar o usuário")
+            notifyError(error, "Não foi possível criar o usuário")
         } finally {
             setSaving(false)
         }

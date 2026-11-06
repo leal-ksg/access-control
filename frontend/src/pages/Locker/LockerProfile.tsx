@@ -8,7 +8,7 @@ import ErrorElement from "../../components/Error"
 import Title from "../../components/Title"
 import ReturnButton from "../../components/ReturnButton"
 import { CardData } from "../../components/Cards/CardData"
-import { prettyDoorState } from "../../models/enums"
+import { prettyDoorState, UserRole } from "../../models/enums"
 import { prettyDate } from "../../utils/dateFix"
 import UserCards from "../../components/Cards/UserCards"
 import { getPermissionData } from "../../utils/permissions"
@@ -16,10 +16,15 @@ import Button from "../../components/Button"
 import { Plus, Trash, X } from "lucide-react"
 import { toast } from "sonner"
 import { confirmAction } from "../../utils/confirmAction"
+import { useAuth } from "../../auth/AuthContext"
+import { notifyError } from "../../utils/notifyError"
 
 export default function LockerProfile() {
     const { id } = useParams()
     const navigate = useNavigate()
+    const { user: loggedUser } = useAuth()
+    const isAdmin = loggedUser?.role === UserRole.ADMIN
+    const canManagePermissions = isAdmin || loggedUser?.role === UserRole.TEACHER
 
     const [locker, setLocker] = useState<Locker | null>(null)
     const [loading, setLoading] = useState<boolean>(true)
@@ -37,7 +42,7 @@ export default function LockerProfile() {
         try {
             const { data } = await http.get(`${routes.api.lockers}/${id}`)
             setLocker(data)
-            await getPermittedUsers()
+            if (canManagePermissions) await getPermittedUsers()
         } catch (error: unknown) {
             console.error("Erro ao carregar armário:", error)
             setError("Não foi possível carregar os dados do armário")
@@ -65,8 +70,7 @@ export default function LockerProfile() {
                 )
             ))
         } catch (error) {
-            console.error("Erro ao buscar usuários disponíveis:", error)
-            setError("Não foi possível carregar os usuários disponíveis")
+            notifyError(error, "Não foi possível carregar os usuários disponíveis")
         }
     }
 
@@ -77,7 +81,6 @@ export default function LockerProfile() {
         if (!confirmed) return;
 
         setSavingPermission(true)
-        setError("")
 
         try {
             const permissions = [
@@ -95,8 +98,7 @@ export default function LockerProfile() {
             toast.success("Usuário liberado")
             await getPermittedUsers()
         } catch (error: unknown) {
-            console.error("Erro ao adicionar permissão:", error);
-            setError("Não foi possível adicionar a permissão");
+            notifyError(error, "Não foi possível adicionar a permissão")
         } finally {
             setSavingPermission(false);
         }
@@ -109,7 +111,6 @@ export default function LockerProfile() {
         if (!confirmed) return;
 
         setSavingPermission(true)
-        setError("")
 
         try {
             const permissions = permittedUsers
@@ -123,8 +124,7 @@ export default function LockerProfile() {
             toast.warning("Usuário removido")
             await getPermittedUsers()
         } catch (error: unknown) {
-            console.error("Erro ao remover permissão:", error)
-            setError("Não foi possível remover a permissão")
+            notifyError(error, "Não foi possível remover a permissão")
         } finally {
             setSavingPermission(false)
         }
@@ -136,15 +136,12 @@ export default function LockerProfile() {
         const confirmed = await confirmAction("Deseja realmente deletar o armário?")
         if (!confirmed) return;
 
-        setError("")
-
         try {
             await http.delete(`${routes.api.lockers}/${locker.id}`)
             toast.warning("Armário deletado")
             navigate(routes.lockers.path)
         } catch (error: unknown) {
-            console.error("Erro ao deletar armário:", error)
-            setError("Não foi possível deletar o armário")
+            notifyError(error, "Não foi possível deletar o armário")
         }
     }
 
@@ -153,8 +150,8 @@ export default function LockerProfile() {
     }, [id])
 
     useEffect(() => {
-        getAvailableUsers()
-    }, [permittedUsers])
+        if (canManagePermissions) getAvailableUsers()
+    }, [permittedUsers, canManagePermissions])
 
     if (loading) {
         return <LoadingElement texto="página do armário" />
@@ -172,14 +169,17 @@ export default function LockerProfile() {
         <Title texto={locker.name} />
 
         <div className="flex flex-wrap gap-3 sm:gap-5 text-center mb-5">
+            {isAdmin && (<>
             <Button to={`${routes.lockers.editPath}/${locker.id}`} texto="Editar armário" />
             <button
+                type="button"
                 onClick={() => deleteLocker()}
                 className="flex items-center justify-center gap-2 rounded-4xl bg-[var(--red)] px-6 sm:px-10 py-3 text-sm font-medium text-white hover:opacity-80"
             >
                 <Trash size={18} />
                 Deletar armário
             </button>
+            </>)}
             <ReturnButton />
         </div>
 
@@ -194,6 +194,7 @@ export default function LockerProfile() {
             )}
         </div>
 
+        {canManagePermissions && (
         <div className="flex flex-col gap-5">
             <div className="flex flex-wrap gap-3 sm:gap-5 items-center">
                 <Title texto="Lista de usuários permitidos" marginless />
@@ -267,5 +268,6 @@ export default function LockerProfile() {
                 </div>
             )}
         </div>
+        )}
     </>)
 }

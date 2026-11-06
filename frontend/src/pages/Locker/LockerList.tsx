@@ -11,15 +11,17 @@ import { getPermissionData } from "../../utils/permissions";
 import Button from "../../components/Button";
 import { UserRole } from "../../models/enums";
 import { toast } from "sonner";
+import { notifyError } from "../../utils/notifyError";
 
 export default function LockerList() {
     const [lockers, setLockers] = useState<Locker[]>([])
     const [loading, setLoading] = useState<boolean>(true)
     const [error, setError] = useState<string>("")
+    const [unlockingId, setUnlockingId] = useState<string | null>(null)
     const { user } = useAuth()
 
-    async function getLockers() {
-        setLoading(true)
+    async function getLockers(showLoading = true) {
+        if (showLoading) setLoading(true)
         setError("")
 
         if (!user?.id) {
@@ -51,13 +53,15 @@ export default function LockerList() {
     }, [])
 
     async function unlockLocker(lockerId: string) {
+        setUnlockingId(lockerId)
         try {
             await http.post(routes.api.openLocker(lockerId))
             toast.success("Armário desbloqueado")
-            await getLockers()
+            await getLockers(false)
         } catch (error: unknown) {
-            console.error("Erro ao desbloquear armário:", error)
-            setError("Não foi possível desbloquear o armário.")
+            notifyError(error, "Não foi possível desbloquear o armário.")
+        } finally {
+            setUnlockingId(null)
         }
     }
 
@@ -77,7 +81,9 @@ export default function LockerList() {
         <div className="flex flex-col gap-5">
             <div className="flex flex-col gap-5 text-center items-start">
                 <Title texto="Armários cadastrados" marginless />
-                <Button to={routes.lockers.createPath} texto="Criar armário" />
+                {user?.role === UserRole.ADMIN && (
+                    <Button to={routes.lockers.createPath} texto="Criar armário" />
+                )}
             </div>
 
             {error && <ErrorElement error={error} />}
@@ -85,6 +91,7 @@ export default function LockerList() {
             <LockerCards
                 lockers={lockers}
                 unlock={unlockLocker}
+                unlockingId={unlockingId}
             />
         </div>
     )

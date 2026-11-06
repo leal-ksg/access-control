@@ -11,6 +11,7 @@ import Input from "../../components/Input";
 import SaveButton from "../../components/SaveButton";
 import Select from "../../components/Select";
 import { toast } from "sonner";
+import { notifyError } from "../../utils/notifyError"
 
 interface FormData {
     name: string
@@ -111,8 +112,7 @@ export default function LockerEdit() {
             toast.success("Armário alterado com sucesso!")
             navigate(routes.lockers.path)
         } catch (error) {
-            console.error("Erro ao atualizar armário:", error)
-            setError("Não foi possível atualizar o armário")
+            notifyError(error, "Não foi possível atualizar o armário")
         } finally {
             setSaving(false)
         }

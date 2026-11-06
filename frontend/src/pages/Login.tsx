@@ -50,12 +50,16 @@ export default function Login() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="min-h-screen flex flex-col items-center justify-center gap-6 sm:gap-8 p-4">
+            <h1 className="max-w-lg text-center text-2xl font-bold text-[var(--color-primary)] sm:text-3xl">
+                Acesso de Controle
+                <span className="block">PIPA IFMAKERS</span>
+            </h1>
             <form
-                className="flex flex-col flex-1 gap-6 sm:gap-10 max-w-lg p-6 sm:p-8 border rounded-4xl shadow-[0_0_10px_rgba(0,0,0,.5)]"
+                className="flex flex-col w-full gap-6 sm:gap-10 max-w-lg p-6 sm:p-8 border rounded-4xl shadow-[0_0_10px_rgba(0,0,0,.5)]"
                 onSubmit={handleSubmit}
             >
-                <Title texto="Faça Seu Login" centered marginless />
+                <Title texto="Faça seu login" centered marginless />
                 <Input
                     label={"E-mail"}
                     name="email"

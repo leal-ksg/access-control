@@ -1,8 +1,11 @@
+import { ReactNode } from "react";
 import { createBrowserRouter } from "react-router-dom";
 import { routes } from "./routes/routes";
 
 import RootLayout from "./layouts/RootLayout";
 import RequireAuth from "./auth/RequireAuth";
+import RequireRole from "./auth/RequireRole";
+import { UserRole } from "./models/enums";
 
 // páginas
 import Dashboard from "./pages/Dashboard";
@@ -18,6 +21,16 @@ import UserEdit from "./pages/User/UserEdit";
 import UserCreate from "./pages/User/UserCreate";
 import LockerEdit from "./pages/Locker/LockerEdit";
 import LockerCreate from "./pages/Locker/LockerCreate";
+
+const adminOnly = (element: ReactNode) => (
+  <RequireRole roles={[UserRole.ADMIN]}>{element}</RequireRole>
+)
+
+const dashboard = (
+  <RequireRole roles={[UserRole.ADMIN]} redirectTo={routes.lockers.path}>
+    <Dashboard />
+  </RequireRole>
+)
 
 export const router = createBrowserRouter([
   {
@@ -36,21 +49,21 @@ export const router = createBrowserRouter([
       </RequireAuth>
     ),
     children: [
-      { index: true, element: <Dashboard /> },
-      { path: routes.dashboard.path, element: <Dashboard /> },
-      { path: routes.logs.path, element: <Events /> },
+      { index: true, element: dashboard },
+      { path: routes.dashboard.path, element: dashboard },
+      { path: routes.logs.path, element: adminOnly(<Events />) },
 
       // users
-      { path: routes.users.path, element: <UserList /> },
+      { path: routes.users.path, element: adminOnly(<UserList />) },
       { path: `${routes.users.path}/:id`, element: <UserProfile /> },
       { path: `${routes.users.editPath}/:id`, element: <UserEdit /> },
-      { path: routes.users.createPath, element: <UserCreate /> },
+      { path: routes.users.createPath, element: adminOnly(<UserCreate />) },
 
       // lockers
       { path: routes.lockers.path, element: <LockerList /> },
       { path: `${routes.lockers.path}/:id`, element: <LockerProfile /> },
-      { path: `${routes.lockers.editPath}/:id`, element: <LockerEdit /> },
-      { path: routes.lockers.createPath, element: <LockerCreate /> }
+      { path: `${routes.lockers.editPath}/:id`, element: adminOnly(<LockerEdit />) },
+      { path: routes.lockers.createPath, element: adminOnly(<LockerCreate />) }
     ]
   },
   {

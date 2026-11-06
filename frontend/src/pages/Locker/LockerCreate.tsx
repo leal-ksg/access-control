@@ -10,6 +10,7 @@ import SaveButton from "../../components/SaveButton"
 import { Device } from "../../models/interfaces"
 import Select from "../../components/Select"
 import { toast } from "sonner"
+import { notifyError } from "../../utils/notifyError"
 
 interface FormData {
     name: string
@@ -61,8 +62,7 @@ export default function LockerCreate() {
             toast.success("Armário cadastrado com sucesso!")
             navigate(routes.lockers.path)
         } catch (error) {
-            console.error("Erro ao criar novo armário:", error)
-            setError("Não foi possível criar o armário")
+            notifyError(error, "Não foi possível criar o armário")
         } finally {
             setSaving(false)
         }

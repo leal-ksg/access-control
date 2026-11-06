@@ -7,9 +7,10 @@ import { ArrowUpRight, Circle } from "lucide-react";
 interface LockerCardProps {
     lockers: Locker[],
     unlock?: (lockerId: string) => void
+    unlockingId?: string | null
 }
 
-export default function LockerCards({ lockers, unlock }: LockerCardProps) {
+export default function LockerCards({ lockers, unlock, unlockingId = null }: LockerCardProps) {
     return (
         <div className="grid grid-cols-1 sm:grid-cols-[repeat(auto-fill,minmax(250px,350px))] gap-4 sm:gap-5">
             {lockers.map(locker => (
@@ -42,10 +43,12 @@ export default function LockerCards({ lockers, unlock }: LockerCardProps) {
 
                     {unlock && locker.device?.isOnline && (
                         <button
-                            className="border rounded-4xl font-medium bg-[var(--color-primary)] hover:bg-[var(--color-secondary)] text-white py-4"
+                            type="button"
+                            className="border rounded-4xl font-medium bg-[var(--color-primary)] hover:bg-[var(--color-secondary)] text-white py-4 disabled:cursor-not-allowed disabled:opacity-50"
                             onClick={() => unlock(locker.id)}
+                            disabled={unlockingId !== null}
                         >
-                            Desbloquear
+                            {unlockingId === locker.id ? "Desbloqueando..." : "Desbloquear"}
                         </button>
                     )}
 

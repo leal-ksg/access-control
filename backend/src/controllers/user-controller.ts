@@ -1,6 +1,7 @@
 import { HttpError } from "../core/http-error";
 import * as userService from "../services/user-service";
 import { Request, Response } from "express";
+import { UserRole } from "../generated/prisma/enums";
 
 export async function getUsers(req: Request, res: Response) {
   const users = await userService.getUsers();
@@ -29,6 +30,16 @@ export async function updateUser(req: Request, res: Response) {
   const id = req.params.id as string;
 
   if (!id) throw new HttpError("Informe o ID para atualizar um usuário", 400);
+
+  const isAdmin = req.user?.role === UserRole.ADMIN;
+  const changesRestrictedFields =
+    req.body.role !== undefined || req.body.active !== undefined;
+
+  if (!isAdmin && changesRestrictedFields)
+    throw new HttpError(
+      "Apenas administradores podem alterar o cargo ou o status de um usuário",
+      403,
+    );
 
   const user = await userService.updateUser(id, req.body);
 
