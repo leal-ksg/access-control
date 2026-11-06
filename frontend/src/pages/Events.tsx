@@ -3,8 +3,8 @@ import Title from "../components/Title"
 import { Event } from "../models/interfaces"
 import { http } from "../api/http"
 import { routes } from "../routes/routes"
-import { prettyDate } from "../utils/dateFix"
-import { prettySeverity } from "../models/enums"
+import { prettyDay, prettyTime } from "../utils/dateFix"
+import { EVENT_TYPES, prettyEventType, prettySeverity } from "../models/enums"
 import LoadingElement from "../components/Loading"
 import ErrorElement from "../components/Error"
 
@@ -32,8 +32,6 @@ export default function Events() {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   )
-
-  const showMetadata = events.some(event => event.metadata != null)
 
   async function getEvents() {
     setLoading(true)
@@ -152,15 +150,18 @@ export default function Events() {
       >
         <div className="flex flex-col gap-1 text-sm font-medium sm:flex-row sm:items-center sm:gap-2">
           <label htmlFor="type">Tipo</label>
-          <input
-            type="text"
+          <select
             id="type"
             name="type"
             value={filters.type}
             onChange={handleFilterChange}
-            placeholder="Ex: LOCKER_UNLOCKED"
             className="w-full rounded-lg border p-2 text-sm bg-white text-black sm:w-auto"
-          />
+          >
+            <option value="">Todos</option>
+            {Object.entries(EVENT_TYPES).map(([type, label]) => (
+              <option key={type} value={type}>{label}</option>
+            ))}
+          </select>
         </div>
         <div className="flex flex-col gap-1 text-sm font-medium sm:flex-row sm:items-center sm:gap-2">
           <label htmlFor="userId">Usuário</label>
@@ -225,20 +226,16 @@ export default function Events() {
             {[
               "Usuário",
               "Armário",
-              "Data/Hora",
+              "Data",
+              "Hora",
               "Tipo",
               "Severidade",
               "Mensagem",
               "Dispositivo",
             ].map
               ((item, index) => (
-                <th key={index} className="p-3 sm:p-5 text-sm font-semibold text-left whitespace-nowrap">{item}</th>
+                <th key={index} className="border-r border-white/30 last:border-r-0 p-3 sm:p-5 text-sm font-semibold text-left whitespace-nowrap">{item}</th>
               ))}
-            {showMetadata && (
-              <th>
-                Metadados
-              </th>
-            )}
           </tr>
         </thead>
         <tbody>
@@ -253,26 +250,16 @@ export default function Events() {
               {[
                 event.user ? `${event.user.name} ${event.user.email}` : "Sistema",
                 event.locker?.name ?? "-",
-                prettyDate(event.createdAt) ?? "-",
-                event.type ?? "-",
+                prettyDay(event.createdAt),
+                prettyTime(event.createdAt),
+                prettyEventType(event.type),
                 prettySeverity(event.severity) ?? "-",
                 event.message ?? "-",
                 event.deviceId ?? "-",
 
               ].map((item, index) => (
-                <td key={index} className="p-3 sm:p-5 text-sm font-medium align-top">{item}</td>
+                <td key={index} className="border-r border-gray-300 last:border-r-0 p-3 sm:p-5 text-sm font-medium align-top">{item}</td>
               ))}
-              {showMetadata && (
-                <td className="p-3 sm:p-5 text-sm font-medium align-top">
-                  {event.metadata
-                    ? (
-                      <pre>
-                        {JSON.stringify(event.metadata, null, 2)}
-                      </pre>
-                    )
-                    : "-"}
-                </td>
-              )}
             </tr>
           ))}
         </tbody>

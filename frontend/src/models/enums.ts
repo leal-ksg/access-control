@@ -37,3 +37,18 @@ export function prettySeverity(severity: EventSeverity): string {
         case EventSeverity.ERROR: return "Erro"
     }
 }
+
+export const EVENT_TYPES: Record<string, string> = {
+    LOCKER_UNLOCKED: "Armário aberto",
+    LOCKER_PERMISSIONS_GRANTED: "Permissões concedidas",
+    LOCKER_PERMISSIONS_REVOKED: "Permissões revogadas",
+    DEVICE_BACK_ONLINE: "Dispositivo online",
+    DEVICE_OFFLINE: "Dispositivo offline",
+    DEVICE_REGISTERED: "Dispositivo registrado",
+    DEVICE_VALIDATION_FAILED: "Dados do dispositivo inválidos",
+    DEVICE_REGISTER_FAILED: "Falha ao registrar dispositivo",
+}
+
+export function prettyEventType(type: string): string {
+    return EVENT_TYPES[type] ?? type
+}

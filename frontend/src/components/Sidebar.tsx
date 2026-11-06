@@ -57,12 +57,12 @@ export default function Sidebar({ open = false, collapsed = false, onClose, onTo
                     <button
                         type="button"
                         onClick={onToggleCollapse}
-                        aria-label={collapsed ? "Expandir menu" : "Recolher menu"}
-                        title={collapsed ? "Expandir menu" : "Recolher menu"}
+                        aria-label={collapsed ? "Expandir menu" : "Ocultar menu"}
+                        title={collapsed ? "Expandir menu" : "Ocultar menu"}
                         className={`m-4 hidden items-center gap-3 rounded py-2 hover:bg-white/20 md:flex ${collapsed ? "justify-center" : "px-5"}`}
                     >
                         {collapsed ? <PanelLeftOpen size={20} /> : <PanelLeftClose size={20} />}
-                        {!collapsed && <span className="text-sm">Recolher</span>}
+                        {!collapsed && <span className="text-sm">Ocultar</span>}
                     </button>
                 )}
             </aside>

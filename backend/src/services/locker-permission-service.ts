@@ -1,3 +1,4 @@
+import { formatUserNames } from "./event-service";
 import {
   LOCKER_PERMISSIONS_GRANTED_EVENT,
   LOCKER_PERMISSIONS_REVOKED_EVENT,
@@ -115,6 +116,7 @@ export async function upsertPermissions(
       select: {
         id: true,
         name: true,
+        surname: true,
       },
       where: {
         id: {
@@ -148,7 +150,7 @@ export async function upsertPermissions(
         lockerId,
         type: LOCKER_PERMISSIONS_GRANTED_EVENT,
         severity: EventSeverity.WARNING,
-        message: `Permissões concedidas ao armário ${existingLocker.name}.`,
+        message: `Permissão de acesso ao armário ${existingLocker.name} concedida para ${formatUserNames(existingUsers)}.`,
         metadata: JSON.stringify(uniquePermissions),
       },
     });
@@ -176,6 +178,7 @@ export async function revokePermissions(
       select: {
         id: true,
         name: true,
+        surname: true,
       },
       where: {
         id: {
@@ -204,7 +207,7 @@ export async function revokePermissions(
         lockerId,
         type: LOCKER_PERMISSIONS_REVOKED_EVENT,
         severity: EventSeverity.WARNING,
-        message: `Permissões de acesso ao armário ${existingLocker.name} revogadas.`,
+        message: `Permissão de acesso ao armário ${existingLocker.name} removida de ${formatUserNames(existingUsers)}.`,
         metadata: JSON.stringify(uniqueUsersIds),
       },
     });
