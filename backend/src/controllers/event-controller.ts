@@ -4,11 +4,12 @@ import { Request, Response } from "express";
 import { EventSeverity } from "../generated/prisma/client";
 
 export async function getEvents(req: Request, res: Response) {
-  const { type, userId, severity, startDate, endDate } = req.query;
+  const { type, userId, lockerId, severity, startDate, endDate } = req.query;
 
   const filters: eventService.GetEventsFiltersDTO = {
     ...(type && { type: type as string }),
     ...(userId && { userId: userId as string }),
+    ...(lockerId && { lockerId: lockerId as string }),
     ...(severity && { severity: severity as EventSeverity }),
     ...(startDate && { startDate: startDate as string }),
     ...(endDate && { endDate: endDate as string }),

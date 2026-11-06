@@ -15,9 +15,11 @@ interface SelectProps {
     onChange: (name: string, value: string) => void;
     placeholder?: string;
     required?: boolean;
+    compact?: boolean;
+    className?: string;
 }
 
-export default function Select({ id, name, label, options, value, onChange, placeholder = "Selecione" }: SelectProps) {
+export default function Select({ id, name, label, options, value, onChange, placeholder = "Selecione", compact = false, className = "" }: SelectProps) {
     const [open, setOpen] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
 
@@ -40,12 +42,12 @@ export default function Select({ id, name, label, options, value, onChange, plac
     }
 
     return (
-        <div className="flex flex-col gap-2">
-            <label htmlFor={id} className="text-lg">
+        <div className={`flex flex-col ${compact ? "gap-1 sm:flex-row sm:items-center sm:gap-2" : "gap-2"}`}>
+            <label htmlFor={id} className={compact ? "text-sm font-medium whitespace-nowrap" : "text-lg"}>
                 {label}
             </label>
 
-            <div ref={ref} className="relative">
+            <div ref={ref} className={`relative ${className}`}>
                 <button
                     id={id}
                     type="button"
@@ -53,7 +55,7 @@ export default function Select({ id, name, label, options, value, onChange, plac
                     onKeyDown={(e) => {
                         if (e.key === "Escape") setOpen(false);
                     }}
-                    className={`flex w-full items-center justify-between border-2 border-slate-300 bg-white px-4 py-3 text-left text-lg ${open ? "rounded-t-3xl rounded-b-none" : "rounded-full"}`}
+                    className={`flex w-full items-center justify-between border-2 border-slate-300 bg-white text-left ${compact ? "gap-2 px-4 py-2 text-sm" : "px-4 py-3 text-lg"} ${open ? "rounded-t-3xl rounded-b-none" : "rounded-full"}`}
                 >
                     <span className="truncate">{selected ? selected.label : placeholder}</span>
                     <ChevronDown
@@ -71,7 +73,7 @@ export default function Select({ id, name, label, options, value, onChange, plac
                                 key={opt.value}
                                 role="option"
                                 onClick={() => handleSelect(opt.value)}
-                                className={`cursor-pointer px-4 py-3 text-md hover:bg-slate-100 ${opt.value === value ? "bg-slate-100 font-medium" : ""
+                                className={`cursor-pointer ${compact ? "px-4 py-2 text-sm" : "px-4 py-3 text-md"} hover:bg-slate-100 ${opt.value === value ? "bg-slate-100 font-medium" : ""
                                     }`}
                             >
                                 {opt.label}

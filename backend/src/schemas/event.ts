@@ -5,6 +5,7 @@ export const getEventsQuerySchema = z
   .object({
     type: z.string().optional(),
     userId: z.cuid2().optional(),
+    lockerId: z.cuid2().optional(),
     severity: z.enum(EventSeverity).optional(),
     startDate: z.iso
       .datetime({ message: "Data inicial deve estar no formato ISO" })

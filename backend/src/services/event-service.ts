@@ -8,6 +8,7 @@ import {
 export interface GetEventsFiltersDTO {
   type?: string;
   userId?: string;
+  lockerId?: string;
   severity?: EventSeverity;
   startDate?: Date | string;
   endDate?: Date | string;
@@ -16,7 +17,7 @@ export interface GetEventsFiltersDTO {
 export async function getEvents(
   filters: GetEventsFiltersDTO = {},
 ): Promise<Event[]> {
-  const { type, userId, severity, startDate, endDate } = filters;
+  const { type, userId, lockerId, severity, startDate, endDate } = filters;
 
   const whereClause: any = {};
 
@@ -26,6 +27,10 @@ export async function getEvents(
 
   if (userId) {
     whereClause.userId = userId;
+  }
+
+  if (lockerId) {
+    whereClause.lockerId = lockerId;
   }
 
   if (severity) {
