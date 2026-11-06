@@ -150,7 +150,7 @@ export default function UserEdit() {
         <ReturnButton />
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-5 ">
-            <div className="grid grid-cols-1 gap-5 md:grid-cols-2 mx-50 my-10">
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-2 my-6 md:mx-10 md:my-10 xl:mx-50">
                 <Input
                     id="name"
                     name="name"

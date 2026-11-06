@@ -52,7 +52,7 @@ export default function Login() {
     return (
         <div className="min-h-screen flex items-center justify-center p-4">
             <form
-                className="flex flex-col flex-1 gap-10 max-w-lg p-8 border rounded-4xl shadow-[0_0_10px_rgba(0,0,0,.5)]"
+                className="flex flex-col flex-1 gap-6 sm:gap-10 max-w-lg p-6 sm:p-8 border rounded-4xl shadow-[0_0_10px_rgba(0,0,0,.5)]"
                 onSubmit={handleSubmit}
             >
                 <Title texto="Faça Seu Login" centered marginless />
@@ -86,7 +86,7 @@ export default function Login() {
                 <button
                     type="submit"
                     disabled={loading}
-                    className="w-full rounded-4xl bg-[var(--color-primary)] p-5 text-white font-semibold hover:bg-[var(--color-secondary)] transition disable:opacity-50 text-lg"
+                    className="w-full rounded-4xl bg-[var(--color-primary)] p-5 text-white font-semibold hover:bg-[var(--color-secondary)] transition disabled:opacity-50 text-lg"
                 >
                     {loading ? "Entrando" : error ? "Tentar novamente" : "Entrar"}
                 </button>

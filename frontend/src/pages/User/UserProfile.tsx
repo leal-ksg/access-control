@@ -105,7 +105,7 @@ export default function UserProfile() {
         <>
             <Title texto={`${user.name} ${user?.surname}`} />
 
-            <div className="flex gap-5 text-center">
+            <div className="flex flex-wrap gap-3 sm:gap-5 text-center">
                 <Button to={`${routes.users.editPath}/${user.id}`} texto="Editar usuário" />
                 {/* botão para desativar outros usuários */}
                 {loggedUser?.id !== user.id &&
@@ -113,7 +113,7 @@ export default function UserProfile() {
                         type="button"
                         onClick={switchStatus}
                         disabled={saving}
-                        className={`w-50 rounded-full px-5 py-3 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50 hover:opacity-80 ${user.active
+                        className={`w-full sm:w-50 rounded-full px-5 py-3 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50 hover:opacity-80 ${user.active
                             ? "bg-[var(--red)] text-white "
                             : "bg-[var(--green)] text-black"
                             }`}
@@ -129,7 +129,7 @@ export default function UserProfile() {
                 <ReturnButton />
             </div>
 
-            <div className="flex flex-col gap-2 ml-10 my-10">
+            <div className="flex flex-col gap-3 sm:gap-2 my-6 sm:ml-10 sm:my-10">
                 <CardData data={user.email} name="E-mail" />
                 <CardData data={prettyRole(user.role)} name="Cargo" />
                 <CardStatus status={user.active} />

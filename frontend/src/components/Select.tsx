@@ -55,7 +55,7 @@ export default function Select({ id, name, label, options, value, onChange, plac
                     }}
                     className={`flex w-full items-center justify-between border-2 border-slate-300 bg-white px-4 py-3 text-left text-lg ${open ? "rounded-t-3xl rounded-b-none" : "rounded-full"}`}
                 >
-                    <span>{selected ? selected.label : placeholder}</span>
+                    <span className="truncate">{selected ? selected.label : placeholder}</span>
                     <ChevronDown
                         size={18}
                         className={`shrink-0 transition-transform ${open ? "rotate-180" : ""}`}
@@ -64,7 +64,7 @@ export default function Select({ id, name, label, options, value, onChange, plac
 
                 {open && (
                     <ul
-                        className="absolute left-0 w-full overflow-hidden rounded-b-3xl border-2 border-t-0 border-slate-300 bg-white"
+                        className="absolute left-0 z-20 max-h-64 w-full overflow-y-auto rounded-b-3xl border-2 border-t-0 border-slate-300 bg-white"
                     >
                         {options.map((opt) => (
                             <li

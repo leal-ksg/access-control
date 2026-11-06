@@ -12,13 +12,13 @@ interface UserCardProps {
 
 export default function UserCards({ users, onRemove }: UserCardProps) {
     return (
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(250px,350px))] gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-[repeat(auto-fill,minmax(250px,350px))] gap-4 sm:gap-5">
             {users.map(user => (
                 <div
                     key={user.id}
                     className="rounded-2xl bg-[var(--card-color)] p-5 flex flex-col gap-2"
                 >
-                    <h2 className="text-lg font-semibold text-gray-900">
+                    <h2 className="text-lg font-semibold text-gray-900 break-words">
                         {user.name} {user.surname}
                     </h2>
                     <span className="text-sm">

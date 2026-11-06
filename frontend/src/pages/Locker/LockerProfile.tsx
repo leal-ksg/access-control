@@ -171,11 +171,11 @@ export default function LockerProfile() {
     return (<>
         <Title texto={locker.name} />
 
-        <div className="flex gap-5 text-center mb-5">
+        <div className="flex flex-wrap gap-3 sm:gap-5 text-center mb-5">
             <Button to={`${routes.lockers.editPath}/${locker.id}`} texto="Editar armário" />
             <button
                 onClick={() => deleteLocker()}
-                className="flex items-center justify-center gap-2 rounded-4xl bg-[var(--red)] px-10 text-sm font-medium text-white hover:opacity-80"
+                className="flex items-center justify-center gap-2 rounded-4xl bg-[var(--red)] px-6 sm:px-10 py-3 text-sm font-medium text-white hover:opacity-80"
             >
                 <Trash size={18} />
                 Deletar armário
@@ -185,7 +185,7 @@ export default function LockerProfile() {
 
         {error && (<ErrorElement error={error} />)}
 
-        <div className="flex flex-col gap-2 ml-10 my-10">
+        <div className="flex flex-col gap-3 sm:gap-2 my-6 sm:ml-10 sm:my-10">
             <CardData data={locker.location} name="Local" />
             <CardData data={prettyDoorState(locker.doorState)} name="Status" />
             <CardData data={prettyDate(locker.createdAt)} name="Criação" />
@@ -195,13 +195,13 @@ export default function LockerProfile() {
         </div>
 
         <div className="flex flex-col gap-5">
-            <div className="flex flex-row gap-5 items-center">
+            <div className="flex flex-wrap gap-3 sm:gap-5 items-center">
                 <Title texto="Lista de usuários permitidos" marginless />
                 {availableUsers.length > 0 && (
                     <button
                         type="button"
                         onClick={() => setShowPermissionModal(true)}
-                        className="rounded-4xl bg-[var(--color-primary)] px-10 py-3 text-white text-sm"
+                        className="rounded-4xl bg-[var(--color-primary)] px-6 sm:px-10 py-3 text-white text-sm"
                     >
                         Adicionar permissão
                     </button>
@@ -214,8 +214,8 @@ export default function LockerProfile() {
             }
 
             {showPermissionModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-5">
-                    <div className="flex flex-col w-full max-w-lg rounded-4xl bg-white p-5 gap-5 shadow-4xl">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-3 sm:p-5">
+                    <div className="flex flex-col w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-3xl sm:rounded-4xl bg-white p-5 gap-5 shadow-4xl">
                         <div className="flex items-center justify-between">
                             <h2 className="text-xl font-bold">
                                 Adicionar permissão
@@ -237,9 +237,9 @@ export default function LockerProfile() {
                                     availableUsers.map(user => (
                                         <div
                                             key={user.id}
-                                            className="flex items-center justify-between gap-5 bg-slate-100 p-5 rounded-4xl hover:bg-slate-200 transition"
+                                            className="flex flex-col items-stretch gap-3 bg-slate-100 p-4 rounded-3xl hover:bg-slate-200 transition sm:flex-row sm:items-center sm:justify-between sm:gap-5 sm:p-5 sm:rounded-4xl"
                                         >
-                                            <div className="flex flex-col">
+                                            <div className="flex min-w-0 flex-col break-all">
                                                 <span>
                                                     {user.name} {user.surname}
                                                 </span>
@@ -251,7 +251,7 @@ export default function LockerProfile() {
                                                 type="button"
                                                 onClick={() => allowAccess(user.id)}
                                                 disabled={savingPermission}
-                                                className="flex flex-row items-center gap-2 rounded-lg bg-[var(--color-primary)] px-4 py-2 text-white hover:bg-[var(--color-tertiary)] disabled:opacity-50"
+                                                className="flex flex-row items-center justify-center gap-2 shrink-0 rounded-lg bg-[var(--color-primary)] px-4 py-2 text-white hover:bg-[var(--color-tertiary)] disabled:opacity-50"
                                             >
                                                 <Plus size={18} />
                                                 {savingPermission ? "Salvando" : "Permitir"}

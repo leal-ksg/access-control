@@ -138,7 +138,7 @@ export default function LockerEdit() {
             onSubmit={handleSubmit}
             className="flex flex-col gap-5"
         >
-            <div className="flex flex-col gap-5 mx-50 my-10">
+            <div className="flex flex-col gap-5 my-6 md:mx-10 md:my-10 xl:mx-50">
                 <Input
                     id="name"
                     name="name"

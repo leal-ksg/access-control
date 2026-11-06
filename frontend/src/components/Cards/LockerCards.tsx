@@ -11,17 +11,17 @@ interface LockerCardProps {
 
 export default function LockerCards({ lockers, unlock }: LockerCardProps) {
     return (
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(250px,350px))] gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-[repeat(auto-fill,minmax(250px,350px))] gap-4 sm:gap-5">
             {lockers.map(locker => (
                 <div
                     key={locker.id}
                     className="rounded-2xl bg-[var(--card-color)] p-5 flex flex-col gap-2"
                 >
                     <div className="flex justify-between items-center">
-                        <h2 className="font-bold text-lg">
+                        <h2 className="font-bold text-lg break-words min-w-0">
                             {locker.name}
                         </h2>
-                        <Circle className="stroke-0" fill={locker.device?.isOnline ? "var(--online)" : "var(--offline)"} />
+                        <Circle className="stroke-0 shrink-0" fill={locker.device?.isOnline ? "var(--online)" : "var(--offline)"} />
                     </div>
 
                     <span className="text-sm">
@@ -51,7 +51,7 @@ export default function LockerCards({ lockers, unlock }: LockerCardProps) {
 
                     <Link
                         to={`${routes.lockers.path}/${locker.id}`}
-                        className="relative flex w-full items-center justify-center rounded-4xl bg-[var(--color-primary)] p-3 text-sm font medium text-white hover:bg-[var(--color-secondary)]"
+                        className="relative flex w-full items-center justify-center rounded-4xl bg-[var(--color-primary)] p-3 text-sm font-medium text-white hover:bg-[var(--color-secondary)]"
                     >
                         Ver detalhes
                         <ArrowUpRight className="absolute right-3" />

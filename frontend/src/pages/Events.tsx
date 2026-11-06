@@ -121,7 +121,7 @@ export default function Events() {
     <Title texto="Histórico de eventos" />
 
     {/* header */}
-    <div className="flex flex-wrap items-center justify-between gap-4 my-5">
+    <div className="flex flex-col gap-4 my-5 lg:flex-row lg:flex-wrap lg:items-center lg:justify-between">
       <div className="flex items-center gap-2">
         <label htmlFor="itemsPerPage">
           Registros por página:
@@ -148,9 +148,9 @@ export default function Events() {
 
       <form
         onSubmit={handleApplyFilters}
-        className="flex flex-row justify-between gap-5 bg-[var(--card-color)] p-4 rounded-2xl border"
+        className="flex flex-col gap-3 bg-[var(--card-color)] p-4 rounded-2xl border sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-5"
       >
-        <div className="flex flex-row items-center gap-2 text-sm font-medium">
+        <div className="flex flex-col gap-1 text-sm font-medium sm:flex-row sm:items-center sm:gap-2">
           <label htmlFor="type">Tipo</label>
           <input
             type="text"
@@ -159,17 +159,17 @@ export default function Events() {
             value={filters.type}
             onChange={handleFilterChange}
             placeholder="Ex: LOCKER_UNLOCKED"
-            className="rounded-lg border p-2 text-sm bg-white text-black"
+            className="w-full rounded-lg border p-2 text-sm bg-white text-black sm:w-auto"
           />
         </div>
-        <div className="flex flex-row gap-2 items-center text-sm font-medium">
+        <div className="flex flex-col gap-1 text-sm font-medium sm:flex-row sm:items-center sm:gap-2">
           <label htmlFor="userId">Usuário</label>
           <select
             id="userId"
             name="userId"
             value={filters.userId}
             onChange={handleFilterChange}
-            className="rounded-lg border p-2 text-sm bg-white text-black max-w-[200px]"
+            className="w-full rounded-lg border p-2 text-sm bg-white text-black sm:w-auto sm:max-w-[200px]"
           >
             <option value="">Todos</option>
             {usersToFilter.map(user => (
@@ -179,7 +179,7 @@ export default function Events() {
             ))}
           </select>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 [&>button]:flex-1 sm:[&>button]:flex-none">
           <button
             type="submit"
             className="rounded-lg bg-[var(--color-primary)] px-3 py-2 text-sm font-medium text-white hover:opacity-90"
@@ -196,7 +196,7 @@ export default function Events() {
         </div>
       </form>
 
-      <div className="flex items-center gap-5">
+      <div className="flex items-center justify-between gap-3 sm:justify-start sm:gap-5">
         <button
           onClick={() => setCurrentPage((page) => page - 1)}
           disabled={currentPage <= 1}
@@ -232,7 +232,7 @@ export default function Events() {
               "Dispositivo",
             ].map
               ((item, index) => (
-                <th key={index} className="p-5 text-sm font-semibold text-left">{item}</th>
+                <th key={index} className="p-3 sm:p-5 text-sm font-semibold text-left whitespace-nowrap">{item}</th>
               ))}
             {showMetadata && (
               <th>
@@ -260,10 +260,10 @@ export default function Events() {
                 event.deviceId ?? "-",
 
               ].map((item, index) => (
-                <td key={index} className="p-5 text-sm font-medium">{item}</td>
+                <td key={index} className="p-3 sm:p-5 text-sm font-medium align-top">{item}</td>
               ))}
               {showMetadata && (
-                <td className="p-5 text-sm font-medium">
+                <td className="p-3 sm:p-5 text-sm font-medium align-top">
                   {event.metadata
                     ? (
                       <pre>
