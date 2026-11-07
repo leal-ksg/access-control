@@ -1,1 +1,22 @@
 @import "tailwindcss";
+
+@font-face {
+    font-family: "ShareTechMono";
+    src: url("./assets/ShareTechMono-Regular.ttf") format("truetype");
+}
+
+@theme {
+    --color-primary: #121A35;
+    --color-secondary: black;
+    --color-tertiary: #008f3b;
+    --button: #293763;
+    --button-hover: #344573;
+    --card-color: #E7E7E7;
+    --green: #B3FFA1;
+    --red: #912421;
+    --light-line: #F6F6F6;
+    --dark-line: #E7E7E7;
+    --online: #26c900;
+    --offline: #e10600;
+    --font-mono-custom: "ShareTechMono", monospace;
+}
