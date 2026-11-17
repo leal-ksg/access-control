@@ -11,6 +11,7 @@
     "target": "es2020",
     "module": "commonjs",
     "esModuleInterop": true,
+    "resolveJsonModule": true,
     "types": ["node"],
     "allowSyntheticDefaultImports": true,
     // For nodejs:
