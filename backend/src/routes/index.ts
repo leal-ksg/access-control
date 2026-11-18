@@ -6,11 +6,13 @@ import { lockerPermissionRouter } from "./locker-permission";
 import { authRouter } from "./auth";
 import { eventRouter } from "./event";
 import { authMiddleware } from "../middlewares/auth-middleware";
+import { healthRouter } from "./health";
 
 export const router = Router();
 
 // public routes
 router.use("/auth", authRouter);
+router.use("/health", healthRouter);
 
 router.use(authMiddleware);
 
