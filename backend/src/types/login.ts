@@ -14,3 +14,4 @@ export interface AuthenticatedUser {
   createdAt: Date;
   role: UserRole;
 }
+ 
