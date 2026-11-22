@@ -1,16 +1,21 @@
 import { Link } from "react-router-dom";
-import { DoorState, prettyDoorState } from "../../models/enums";
 import { Locker } from "../../models/interfaces";
 import { routes } from "../../routes/routes";
-import { ArrowUpRight, Circle } from "lucide-react";
+import { ArrowUpRight, Circle, LockOpen, TriangleAlert } from "lucide-react";
+
+export interface UnlockFeedback {
+    type: "success" | "error"
+    message: string
+}
 
 interface LockerCardProps {
     lockers: Locker[],
     unlock?: (lockerId: string) => void
     unlockingId?: string | null
+    feedback?: Record<string, UnlockFeedback>
 }
 
-export default function LockerCards({ lockers, unlock, unlockingId = null }: LockerCardProps) {
+export default function LockerCards({ lockers, unlock, unlockingId = null, feedback = {} }: LockerCardProps) {
     return (
         <div className="grid grid-cols-1 sm:grid-cols-[repeat(auto-fill,minmax(250px,350px))] gap-4 sm:gap-5">
             {lockers.map(locker => (
@@ -29,27 +34,32 @@ export default function LockerCards({ lockers, unlock, unlockingId = null }: Loc
                         Local: {locker.location}
                     </span>
 
-                    <div className="flex flex-row gap-1 items-center text-sm">
-                        <span>
-                            Status:
-                        </span>
-                        <span className={`w-fit px-3 py-1 rounded-4xl text-center font-medium ${locker.doorState === DoorState.OPEN
-                            ? "bg-[var(--green)] text-black"
-                            : "bg-[var(--red)] text-white"
-                            }`}>
-                            {prettyDoorState(locker.doorState)}
-                        </span>
-                    </div>
-
                     {unlock && locker.device?.isOnline && (
-                        <button
-                            type="button"
-                            className="border rounded-4xl font-medium bg-[var(--color-primary)] hover:bg-[var(--color-secondary)] text-white py-4 disabled:cursor-not-allowed disabled:opacity-50"
-                            onClick={() => unlock(locker.id)}
-                            disabled={unlockingId !== null}
-                        >
-                            {unlockingId === locker.id ? "Desbloqueando..." : "Desbloquear"}
-                        </button>
+                        feedback[locker.id]?.type === "success" ? (
+                            <div
+                                role="status"
+                                className="flex items-center justify-center gap-2 rounded-4xl font-medium bg-[var(--green)] text-black py-4"
+                            >
+                                <LockOpen className="size-5" />
+                                Desbloqueado
+                            </div>
+                        ) : (
+                            <button
+                                type="button"
+                                className="border rounded-4xl font-medium bg-[var(--color-primary)] hover:bg-[var(--color-secondary)] text-white py-4 disabled:cursor-not-allowed disabled:opacity-50"
+                                onClick={() => unlock(locker.id)}
+                                disabled={unlockingId !== null}
+                            >
+                                {unlockingId === locker.id ? "Desbloqueando..." : "Desbloquear"}
+                            </button>
+                        )
+                    )}
+
+                    {feedback[locker.id]?.type === "error" && (
+                        <p role="alert" className="flex items-center gap-2 text-sm font-medium text-[var(--red)]">
+                            <TriangleAlert className="size-4 shrink-0" />
+                            {feedback[locker.id].message}
+                        </p>
                     )}
 
                     <Link

@@ -8,7 +8,7 @@ import ErrorElement from "../../components/Error"
 import Title from "../../components/Title"
 import ReturnButton from "../../components/ReturnButton"
 import { CardData } from "../../components/Cards/CardData"
-import { prettyDoorState, UserRole } from "../../models/enums"
+import { UserRole } from "../../models/enums"
 import { prettyDate } from "../../utils/dateFix"
 import UserCards from "../../components/Cards/UserCards"
 import { getPermissionData } from "../../utils/permissions"
@@ -187,7 +187,6 @@ export default function LockerProfile() {
 
         <div className="flex flex-col gap-3 sm:gap-2 my-6 sm:ml-10 sm:my-10">
             <CardData data={locker.location} name="Local" />
-            <CardData data={prettyDoorState(locker.doorState)} name="Status" />
             <CardData data={prettyDate(locker.createdAt)} name="Criação" />
             {locker.device && (
                 <CardData data={locker.device.macAddress} name="Dispositivo" />

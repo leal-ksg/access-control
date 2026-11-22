@@ -1,23 +1,28 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Title from "../../components/Title";
 import { Locker } from "../../models/interfaces";
 import { http } from "../../api/http";
 import { routes } from "../../routes/routes";
 import ErrorElement from "../../components/Error";
-import LockerCards from "../../components/Cards/LockerCards";
 import LoadingElement from "../../components/Loading";
 import { useAuth } from "../../auth/AuthContext";
 import { getPermissionData } from "../../utils/permissions";
 import Button from "../../components/Button";
 import { UserRole } from "../../models/enums";
-import { toast } from "sonner";
-import { notifyError } from "../../utils/notifyError";
+import LockerCards, { UnlockFeedback } from "../../components/Cards/LockerCards";
+import { getErrorMessage } from "../../utils/notifyError";
+
+// Tempo que o card mostra "Desbloqueado" antes de voltar ao botão normal.
+// O ESP32 destrava por TEMPO_ABERTURA (2s) e tranca sozinho em seguida.
+const UNLOCKED_DISPLAY_MS = 5000
 
 export default function LockerList() {
     const [lockers, setLockers] = useState<Locker[]>([])
     const [loading, setLoading] = useState<boolean>(true)
     const [error, setError] = useState<string>("")
     const [unlockingId, setUnlockingId] = useState<string | null>(null)
+    const [feedback, setFeedback] = useState<Record<string, UnlockFeedback>>({})
+    const timers = useRef<Record<string, ReturnType<typeof setTimeout>>>({})
     const { user } = useAuth()
 
     async function getLockers(showLoading = true) {
@@ -50,16 +55,34 @@ export default function LockerList() {
 
     useEffect(() => {
         getLockers()
+        const pending = timers.current
+        return () => Object.values(pending).forEach(clearTimeout)
     }, [])
+
+    function showFeedback(lockerId: string, value: UnlockFeedback) {
+        clearTimeout(timers.current[lockerId])
+        setFeedback(prev => ({ ...prev, [lockerId]: value }))
+        timers.current[lockerId] = setTimeout(() => {
+            setFeedback(prev => {
+                const { [lockerId]: _removed, ...rest } = prev
+                return rest
+            })
+            delete timers.current[lockerId]
+        }, UNLOCKED_DISPLAY_MS)
+    }
 
     async function unlockLocker(lockerId: string) {
         setUnlockingId(lockerId)
         try {
             await http.post(routes.api.openLocker(lockerId))
-            toast.success("Armário desbloqueado")
+            showFeedback(lockerId, { type: "success", message: "Armário desbloqueado" })
             await getLockers(false)
         } catch (error: unknown) {
-            notifyError(error, "Não foi possível desbloquear o armário.")
+            console.error(error)
+            showFeedback(lockerId, {
+                type: "error",
+                message: getErrorMessage(error, "Não foi possível desbloquear o armário."),
+            })
         } finally {
             setUnlockingId(null)
         }
@@ -92,6 +115,7 @@ export default function LockerList() {
                 lockers={lockers}
                 unlock={unlockLocker}
                 unlockingId={unlockingId}
+                feedback={feedback}
             />
         </div>
     )
