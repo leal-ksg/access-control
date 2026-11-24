@@ -5,6 +5,7 @@ import { Event, EventSeverity, Prisma } from "../generated/prisma/client";
 import {
   LOCKER_PERMISSIONS_GRANTED_EVENT,
   LOCKER_PERMISSIONS_REVOKED_EVENT,
+  EVENTS_DELETED_EVENT,
 } from "../constants";
 
 export interface GetEventsFiltersDTO {
@@ -26,10 +27,12 @@ function hideRootEventsWhere(requester?: AuthenticatedUser) {
   } satisfies Prisma.EventWhereInput;
 }
 
-export async function getEvents(
-  filters: GetEventsFiltersDTO = {},
+// Mesmo critério para listar e para apagar: o que o admin vê na tela
+// (com os filtros aplicados) é exatamente o que será apagado.
+function buildEventsWhere(
+  filters: GetEventsFiltersDTO,
   requester?: AuthenticatedUser,
-): Promise<Event[]> {
+): Prisma.EventWhereInput {
   const { type, userId, lockerId, severity, startDate, endDate } = filters;
 
   const whereClause: any = {};
@@ -76,8 +79,15 @@ export async function getEvents(
     }
   }
 
+  return { ...whereClause, ...hideRootEventsWhere(requester) };
+}
+
+export async function getEvents(
+  filters: GetEventsFiltersDTO = {},
+  requester?: AuthenticatedUser,
+): Promise<Event[]> {
   const events = await prisma.event.findMany({
-    where: { ...whereClause, ...hideRootEventsWhere(requester) },
+    where: buildEventsWhere(filters, requester),
     orderBy: {
       createdAt: "desc",
     },
@@ -97,6 +107,31 @@ export async function getEvents(
   });
 
   return describePermissionEvents(events, requester);
+}
+
+// Apaga os eventos que batem com os filtros e registra quem apagou,
+// para a limpeza do histórico também ficar no histórico.
+export async function deleteEvents(
+  filters: GetEventsFiltersDTO,
+  requester: AuthenticatedUser,
+): Promise<number> {
+  return prisma.$transaction(async (tx) => {
+    const { count } = await tx.event.deleteMany({
+      where: buildEventsWhere(filters, requester),
+    });
+
+    await tx.event.create({
+      data: {
+        userId: requester.id,
+        type: EVENTS_DELETED_EVENT,
+        severity: EventSeverity.WARNING,
+        message: `${count} evento(s) apagado(s) do histórico.`,
+        metadata: JSON.stringify(filters),
+      },
+    });
+
+    return count;
+  });
 }
 
 export async function getEventById(

@@ -3,7 +3,8 @@ import { prisma } from "../database/prisma";
 import { User } from "../generated/prisma/client";
 import { CreateUserDTO } from "../types/user";
 import { AuthenticatedUser } from "../types/login";
-import { visibleUsersWhere } from "../core/root-user";
+import { isRootUser, visibleUsersWhere } from "../core/root-user";
+import { UserRole } from "../generated/prisma/enums";
 import bcrypt from "bcrypt";
 
 // Nunca devolver o hash da senha nas respostas da API
@@ -68,18 +69,35 @@ export async function createUser(data: CreateUserDTO): Promise<User> {
   return newUser;
 }
 
+// Exclusão definitiva. As permissões de armário do usuário são apagadas
+// junto; os eventos dele continuam no histórico, sem o vínculo de autor
+// (a FK Event.userId é ON DELETE SET NULL).
 export async function deleteUser(
   id: string,
   requester?: AuthenticatedUser,
 ): Promise<void> {
-  await assertUserVisible(id, requester);
+  if (requester?.id === id)
+    throw new HttpError("Você não pode excluir a própria conta", 400);
 
-  await prisma.user.update({
-    data: { active: false },
-    where: {
-      id,
-    },
-  });
+  const user = await getUserById(id, requester);
+
+  if (!user) throw new HttpError("Usuário não encontrado", 404);
+
+  // Nenhum root é excluído pela API, nem por outro root
+  if (user.isRoot)
+    throw new HttpError("Este usuário não pode ser excluído", 403);
+
+  // Admin exclui professores e estudantes; administradores, só o root
+  if (user.role === UserRole.ADMIN && !isRootUser(requester))
+    throw new HttpError(
+      "Apenas o usuário root pode excluir administradores",
+      403,
+    );
+
+  await prisma.$transaction([
+    prisma.lockerPermission.deleteMany({ where: { userId: id } }),
+    prisma.user.delete({ where: { id } }),
+  ]);
 }
 
 export async function updateUser(

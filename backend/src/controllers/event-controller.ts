@@ -3,10 +3,12 @@ import * as eventService from "../services/event-service";
 import { Request, Response } from "express";
 import { EventSeverity } from "../generated/prisma/client";
 
-export async function getEvents(req: Request, res: Response) {
-  const { type, userId, lockerId, severity, startDate, endDate } = req.query;
+function filtersFromQuery(
+  query: Request["query"],
+): eventService.GetEventsFiltersDTO {
+  const { type, userId, lockerId, severity, startDate, endDate } = query;
 
-  const filters: eventService.GetEventsFiltersDTO = {
+  return {
     ...(type && { type: type as string }),
     ...(userId && { userId: userId as string }),
     ...(lockerId && { lockerId: lockerId as string }),
@@ -14,10 +16,24 @@ export async function getEvents(req: Request, res: Response) {
     ...(startDate && { startDate: startDate as string }),
     ...(endDate && { endDate: endDate as string }),
   };
+}
 
-  const events = await eventService.getEvents(filters, req.user);
+export async function getEvents(req: Request, res: Response) {
+  const events = await eventService.getEvents(
+    filtersFromQuery(req.query),
+    req.user,
+  );
 
   return res.json(events);
+}
+
+export async function deleteEvents(req: Request, res: Response) {
+  const deleted = await eventService.deleteEvents(
+    filtersFromQuery(req.query),
+    req.user!,
+  );
+
+  return res.json({ deleted });
 }
 
 export async function getEventById(req: Request, res: Response) {

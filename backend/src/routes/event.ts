@@ -14,4 +14,9 @@ eventRouter
     validationMiddleware(getEventsQuerySchema, "query"),
     eventController.getEvents,
   )
+  .delete(
+    "/",
+    validationMiddleware(getEventsQuerySchema, "query"),
+    eventController.deleteEvents,
+  )
   .get("/:id", eventController.getEventById);
