@@ -47,7 +47,6 @@ export const EVENT_TYPES: Record<string, string> = {
     DEVICE_REGISTERED: "Dispositivo registrado",
     DEVICE_VALIDATION_FAILED: "Dados do dispositivo inválidos",
     DEVICE_REGISTER_FAILED: "Falha ao registrar dispositivo",
-    EVENTS_DELETED: "Eventos apagados",
 }
 
 export function prettyEventType(type: string): string {

@@ -8,9 +8,10 @@ import { confirmAction } from "../../utils/confirmAction";
 interface UserCardProps {
     users: User[]
     onRemove?: (id: string) => void
+    canRemove?: (user: User) => boolean
 }
 
-export default function UserCards({ users, onRemove }: UserCardProps) {
+export default function UserCards({ users, onRemove, canRemove = () => true }: UserCardProps) {
     return (
         <div className="grid grid-cols-1 sm:grid-cols-[repeat(auto-fill,minmax(250px,350px))] gap-4 sm:gap-5">
             {users.map(user => (
@@ -38,7 +39,7 @@ export default function UserCards({ users, onRemove }: UserCardProps) {
                         <ArrowUpRight className="absolute right-3" />
                     </Link>
 
-                    {onRemove && (
+                    {onRemove && canRemove(user) && (
                         <button
                             type="button"
                             onClick={() => onRemove(user.id)}

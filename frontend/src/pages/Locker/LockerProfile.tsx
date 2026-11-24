@@ -25,6 +25,9 @@ export default function LockerProfile() {
     const { user: loggedUser } = useAuth()
     const isAdmin = loggedUser?.role === UserRole.ADMIN
     const canManagePermissions = isAdmin || loggedUser?.role === UserRole.TEACHER
+    // professor gerencia só o acesso de alunos e o dele mesmo
+    const canManageUser = (user: User) =>
+        isAdmin || user.role === UserRole.STUDENT || user.id === loggedUser?.id
 
     const [locker, setLocker] = useState<Locker | null>(null)
     const [loading, setLoading] = useState<boolean>(true)
@@ -65,7 +68,7 @@ export default function LockerProfile() {
             const { data } = await http.get(routes.api.users)
 
             setAvailableUsers(data.filter(
-                (user: User) => !permittedUsers.some(
+                (user: User) => canManageUser(user) && !permittedUsers.some(
                     (permitted) => permitted.id === user.id
                 )
             ))
@@ -84,7 +87,7 @@ export default function LockerProfile() {
 
         try {
             const permissions = [
-                ...permittedUsers.map(user => ({
+                ...permittedUsers.filter(canManageUser).map(user => ({
                     userId: user.id,
                     expiresAt: null
                 })),
@@ -114,7 +117,7 @@ export default function LockerProfile() {
 
         try {
             const permissions = permittedUsers
-                .filter(user => user.id !== id)
+                .filter(user => user.id !== id && canManageUser(user))
                 .map(user => ({
                     userId: user.id,
                     expiresAt: null
@@ -209,7 +212,7 @@ export default function LockerProfile() {
             </div>
 
             {permittedUsers.length > 0
-                ? <UserCards users={permittedUsers} onRemove={revokeAccess} />
+                ? <UserCards users={permittedUsers} onRemove={revokeAccess} canRemove={canManageUser} />
                 : <p className="text-[var(--red)] font-bold text-md">Nenhum usuário liberado.</p>
             }
 

@@ -34,7 +34,8 @@ export default function LockerList() {
         }
 
         try {
-            if (user.role === UserRole.ADMIN) {
+            // professor vê todos para poder liberar acesso a alunos
+            if (user.role === UserRole.ADMIN || user.role === UserRole.TEACHER) {
                 const { data } = await http.get(routes.api.lockers)
                 setLockers(data)
             } else {
@@ -92,14 +93,6 @@ export default function LockerList() {
         return <LoadingElement texto="armários" />
     }
 
-    if (error && lockers?.length === 0) {
-        return <ErrorElement error={error} />
-    }
-
-    if (lockers?.length === 0) {
-        return <p>Nenhum armário cadastrado.</p>
-    }
-
     return (
         <div className="flex flex-col gap-5">
             <div className="flex flex-col gap-5 text-center items-start">
@@ -111,12 +104,23 @@ export default function LockerList() {
 
             {error && <ErrorElement error={error} />}
 
-            <LockerCards
-                lockers={lockers}
-                unlock={unlockLocker}
-                unlockingId={unlockingId}
-                feedback={feedback}
-            />
+            {/* o cabeçalho (com "Criar armário") aparece mesmo com a lista vazia */}
+            {!error && lockers.length === 0 && (
+                <p>
+                    {user?.role === UserRole.STUDENT
+                        ? "Você ainda não tem acesso a nenhum armário."
+                        : "Nenhum armário cadastrado."}
+                </p>
+            )}
+
+            {lockers.length > 0 && (
+                <LockerCards
+                    lockers={lockers}
+                    unlock={unlockLocker}
+                    unlockingId={unlockingId}
+                    feedback={feedback}
+                />
+            )}
         </div>
     )
 }
