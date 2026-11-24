@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Trash } from "lucide-react";
+import { useNavigate, useParams } from "react-router-dom";
 import { Locker, User } from "../../models/interfaces";
 import { http } from "../../api/http";
 import { routes } from "../../routes/routes";
@@ -20,6 +21,7 @@ import { notifyError } from "../../utils/notifyError";
 
 export default function UserProfile() {
     const { id } = useParams()
+    const navigate = useNavigate()
 
     const [user, setUser] = useState<User | null>(null)
     const { user: loggedUser } = useAuth()
@@ -29,6 +31,9 @@ export default function UserProfile() {
     const [saving, setSaving] = useState<boolean>(false)
     const isAdmin = loggedUser?.role === UserRole.ADMIN
     const isSelf = loggedUser?.id === id
+    // root exclui qualquer um; admin comum não exclui outros administradores
+    const canDelete = isAdmin && !isSelf && !!user &&
+        (loggedUser?.isRoot === true || user.role !== UserRole.ADMIN)
 
     async function getUser() {
         setLoading(true)
@@ -76,6 +81,25 @@ export default function UserProfile() {
         } catch (error) {
             notifyError(error, "Não foi possível alterar o status do usuário")
         } finally {
+            setSaving(false)
+        }
+    }
+
+    async function deleteUser() {
+        if (!user) return;
+
+        const confirmed = await confirmAction(
+            `Excluir ${user.name} ${user.surname} permanentemente? Essa ação não pode ser desfeita.`
+        )
+        if (!confirmed) return
+
+        try {
+            setSaving(true)
+            await http.delete(`${routes.api.users}/${user.id}`)
+            toast.warning("Usuário excluído")
+            navigate(routes.users.path)
+        } catch (error) {
+            notifyError(error, "Não foi possível excluir o usuário")
             setSaving(false)
         }
     }
@@ -129,6 +153,17 @@ export default function UserProfile() {
                         }
                     </button>)
                 }
+                {canDelete && (
+                    <button
+                        type="button"
+                        onClick={deleteUser}
+                        disabled={saving}
+                        className="flex w-full sm:w-auto items-center justify-center gap-2 rounded-full bg-[var(--red)] px-6 sm:px-10 py-3 text-sm font-medium text-white hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                        <Trash size={18} />
+                        Excluir usuário
+                    </button>
+                )}
                 <ReturnButton />
             </div>
 

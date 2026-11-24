@@ -8,6 +8,10 @@ import { EVENT_TYPES, prettyEventType, prettySeverity } from "../models/enums"
 import LoadingElement from "../components/Loading"
 import ErrorElement from "../components/Error"
 import Select from "../components/Select"
+import { Trash } from "lucide-react"
+import { toast } from "sonner"
+import { confirmAction } from "../utils/confirmAction"
+import { notifyError } from "../utils/notifyError"
 
 interface UserEvent {
   id: string
@@ -27,6 +31,7 @@ export default function Events() {
   const [error, setError] = useState<string>("")
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [itemsPerPage, setItemsPerPage] = useState<number>(10)
+  const [deleting, setDeleting] = useState<boolean>(false)
 
   const totalPages = Math.ceil(events.length / itemsPerPage)
 
@@ -81,6 +86,33 @@ export default function Events() {
 
     return Array.from(userMap.values())
   }, [events])
+
+  // Apaga exatamente o que está listado: com filtros, só os filtrados
+  async function deleteEvents() {
+    const params = Object.fromEntries(
+      Object.entries(appliedFilters).filter(([_, value]) => value !== "")
+    )
+    const filtered = Object.keys(params).length > 0
+
+    const confirmed = await confirmAction(
+      filtered
+        ? `Apagar os ${events.length} evento(s) filtrados? Essa ação não pode ser desfeita.`
+        : `Apagar todo o histórico (${events.length} eventos)? Essa ação não pode ser desfeita.`
+    )
+    if (!confirmed) return
+
+    setDeleting(true)
+    try {
+      const { data } = await http.delete<{ deleted: number }>(routes.api.events, { params })
+      toast.warning(`${data.deleted} evento(s) apagado(s)`)
+      setCurrentPage(1)
+      await getEvents()
+    } catch (error: unknown) {
+      notifyError(error, "Não foi possível apagar os eventos.")
+    } finally {
+      setDeleting(false)
+    }
+  }
 
   function handleFilterChange(name: string, value: string) {
     setFilters(prev => ({ ...prev, [name]: value }))
@@ -201,6 +233,16 @@ export default function Events() {
           </button>
         </div>
       </form>
+
+      <button
+        type="button"
+        onClick={deleteEvents}
+        disabled={deleting || events.length === 0}
+        className="flex items-center justify-center gap-2 rounded-full bg-[var(--red)] px-5 py-2 text-sm font-medium text-white hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        <Trash size={16} />
+        {deleting ? "Apagando..." : "Apagar eventos"}
+      </button>
 
     </div>
 

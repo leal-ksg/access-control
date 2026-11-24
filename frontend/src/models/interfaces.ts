@@ -8,6 +8,7 @@ export interface User {
     active: boolean
     createdAt: string
     role: UserRole
+    isRoot?: boolean
 }
 
 export interface Locker {
