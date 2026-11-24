@@ -33,6 +33,9 @@ model User {
   active    Boolean  @default(true)
   createdAt DateTime @default(now())
   role      UserRole @default(STUDENT)
+  // Usuário oculto e protegido: invisível para os demais perfis e só
+  // pode ser editado por ele mesmo. Criado apenas via `npm run create-root`.
+  isRoot    Boolean  @default(false)
 
   permissions LockerPermission[]
   events      Event[]

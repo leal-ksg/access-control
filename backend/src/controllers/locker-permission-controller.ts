@@ -9,7 +9,7 @@ export async function getPermissionsByLockerId(req: Request, res: Response) {
     throw new HttpError("Informe um ID de armário para buscar permissões");
 
   const permissions =
-    await lockerPermissionService.getPermissionsByLockerId(lockerId);
+    await lockerPermissionService.getPermissionsByLockerId(lockerId, req.user);
 
   return res.json(permissions);
 }
@@ -21,7 +21,7 @@ export async function getPermissionsByUserId(req: Request, res: Response) {
     throw new HttpError("Informe um ID de usuário para buscar permissões");
 
   const permissions =
-    await lockerPermissionService.getPermissionsByUserId(userId);
+    await lockerPermissionService.getPermissionsByUserId(userId, req.user);
 
   return res.json(permissions);
 }
@@ -49,7 +49,7 @@ export async function revokePermissions(req: Request, res: Response) {
 
   await lockerPermissionService.revokePermissions(
     lockerId,
-    req.user?.id!,
+    req.user!,
     req.body,
   );
 

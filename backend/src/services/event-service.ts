@@ -1,5 +1,7 @@
 import { prisma } from "../database/prisma";
-import { Event, EventSeverity } from "../generated/prisma/client";
+import { isRootUser, visibleUsersWhere } from "../core/root-user";
+import { AuthenticatedUser } from "../types/user";
+import { Event, EventSeverity, Prisma } from "../generated/prisma/client";
 import {
   LOCKER_PERMISSIONS_GRANTED_EVENT,
   LOCKER_PERMISSIONS_REVOKED_EVENT,
@@ -14,8 +16,19 @@ export interface GetEventsFiltersDTO {
   endDate?: Date | string;
 }
 
+// Esconde eventos disparados por um root de quem não é root. Eventos sem
+// usuário (os do dispositivo) continuam aparecendo.
+function hideRootEventsWhere(requester?: AuthenticatedUser) {
+  if (isRootUser(requester)) return {};
+
+  return {
+    AND: [{ OR: [{ userId: null }, { user: { is: { isRoot: false } } }] }],
+  } satisfies Prisma.EventWhereInput;
+}
+
 export async function getEvents(
   filters: GetEventsFiltersDTO = {},
+  requester?: AuthenticatedUser,
 ): Promise<Event[]> {
   const { type, userId, lockerId, severity, startDate, endDate } = filters;
 
@@ -64,7 +77,7 @@ export async function getEvents(
   }
 
   const events = await prisma.event.findMany({
-    where: whereClause,
+    where: { ...whereClause, ...hideRootEventsWhere(requester) },
     orderBy: {
       createdAt: "desc",
     },
@@ -83,16 +96,20 @@ export async function getEvents(
     },
   });
 
-  return describePermissionEvents(events);
+  return describePermissionEvents(events, requester);
 }
 
-export async function getEventById(id: string): Promise<Event | null> {
-  const event = await prisma.event.findUnique({
+export async function getEventById(
+  id: string,
+  requester?: AuthenticatedUser,
+): Promise<Event | null> {
+  const event = await prisma.event.findFirst({
     where: {
       id,
+      ...hideRootEventsWhere(requester),
     },
     include: {
-      user: true,
+      user: { omit: { password: true } },
       locker: true,
       device: true,
     },
@@ -139,7 +156,7 @@ function extractUserIds(metadata: unknown): string[] {
 
 async function describePermissionEvents<
   T extends Event & { locker: { name: string } | null },
->(events: T[]): Promise<T[]> {
+>(events: T[], requester?: AuthenticatedUser): Promise<T[]> {
   const permissionTypes = [
     LOCKER_PERMISSIONS_GRANTED_EVENT,
     LOCKER_PERMISSIONS_REVOKED_EVENT,
@@ -157,7 +174,10 @@ async function describePermissionEvents<
 
   const users = await prisma.user.findMany({
     select: { id: true, name: true, surname: true },
-    where: { id: { in: [...new Set([...usersIdsByEvent.values()].flat())] } },
+    where: {
+      id: { in: [...new Set([...usersIdsByEvent.values()].flat())] },
+      ...visibleUsersWhere(requester),
+    },
   });
 
   const usersById = new Map(users.map((user) => [user.id, user]));

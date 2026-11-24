@@ -15,7 +15,7 @@ export async function getEvents(req: Request, res: Response) {
     ...(endDate && { endDate: endDate as string }),
   };
 
-  const events = await eventService.getEvents(filters);
+  const events = await eventService.getEvents(filters, req.user);
 
   return res.json(events);
 }
@@ -27,7 +27,7 @@ export async function getEventById(req: Request, res: Response) {
     throw new HttpError("Informe o ID para buscar um evento");
   }
 
-  const event = await eventService.getEventById(id);
+  const event = await eventService.getEventById(id, req.user);
 
   if (!event) {
     throw new HttpError("Evento não encontrado", 404);

@@ -12,6 +12,7 @@ import {
 } from "../generated/prisma/client";
 import { LockerPermissionDTO } from "../types/locker-permission";
 import { AuthenticatedUser } from "../types/user";
+import { visibleUsersWhere } from "../core/root-user";
 
 export async function validateLockerPermission(
   lockerId: string,
@@ -54,10 +55,12 @@ export async function validateLockerPermission(
 
 export async function getPermissionsByUserId(
   userId: string,
+  requester?: AuthenticatedUser,
 ): Promise<LockerPermission[]> {
   const permissions = await prisma.lockerPermission.findMany({
     where: {
       userId,
+      user: visibleUsersWhere(requester),
     },
   });
 
@@ -66,10 +69,12 @@ export async function getPermissionsByUserId(
 
 export async function getPermissionsByLockerId(
   lockerId: string,
+  requester?: AuthenticatedUser,
 ): Promise<LockerPermission[]> {
   const permissions = await prisma.lockerPermission.findMany({
     where: {
       lockerId,
+      user: visibleUsersWhere(requester),
     },
   });
 
@@ -122,6 +127,7 @@ export async function upsertPermissions(
         id: {
           in: uniqueUsersIds,
         },
+        ...visibleUsersWhere(requesterUser),
       },
     });
 
@@ -130,9 +136,12 @@ export async function upsertPermissions(
         "Um ou mais usuários informados não existem no sistema",
       );
 
+    // A lista enviada substitui as permissões do armário, mas só entre os
+    // usuários que o solicitante enxerga: o acesso de um root oculto fica.
     await tx.lockerPermission.deleteMany({
       where: {
         lockerId,
+        user: visibleUsersWhere(requesterUser),
       },
     });
 
@@ -159,7 +168,7 @@ export async function upsertPermissions(
 
 export async function revokePermissions(
   lockerId: string,
-  requesterUserId: string,
+  requesterUser: AuthenticatedUser,
   userIds: string[],
 ): Promise<void> {
   await prisma.$transaction(async (tx) => {
@@ -184,6 +193,7 @@ export async function revokePermissions(
         id: {
           in: uniqueUsersIds,
         },
+        ...visibleUsersWhere(requesterUser),
       },
     });
 
@@ -203,7 +213,7 @@ export async function revokePermissions(
 
     await tx.event.create({
       data: {
-        userId: requesterUserId,
+        userId: requesterUser.id,
         lockerId,
         type: LOCKER_PERMISSIONS_REVOKED_EVENT,
         severity: EventSeverity.WARNING,

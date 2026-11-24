@@ -13,5 +13,6 @@ export interface AuthenticatedUser {
   active: boolean;
   createdAt: Date;
   role: UserRole;
+  isRoot?: boolean;
 }
  

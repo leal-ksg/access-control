@@ -4,7 +4,7 @@ import { Request, Response } from "express";
 import { UserRole } from "../generated/prisma/enums";
 
 export async function getUsers(req: Request, res: Response) {
-  const users = await userService.getUsers();
+  const users = await userService.getUsers(req.user);
 
   return res.json(users);
 }
@@ -14,7 +14,9 @@ export async function getUserById(req: Request, res: Response) {
 
   if (!id) throw new HttpError("Informe o ID para buscar um usuário", 400);
 
-  const user = await userService.getUserById(id);
+  const user = await userService.getUserById(id, req.user);
+
+  if (!user) throw new HttpError("Usuário não encontrado", 404);
 
   return res.json(user);
 }
@@ -41,7 +43,7 @@ export async function updateUser(req: Request, res: Response) {
       403,
     );
 
-  const user = await userService.updateUser(id, req.body);
+  const user = await userService.updateUser(id, req.body, req.user);
 
   return res.json(user);
 }
@@ -51,7 +53,7 @@ export async function deleteUser(req: Request, res: Response) {
 
   if (!id) throw new HttpError("Informe o ID para deletar um usuário", 400);
 
-  await userService.deleteUser(id);
+  await userService.deleteUser(id, req.user);
 
   return res.status(204).send();
 }
