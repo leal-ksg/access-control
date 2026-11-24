@@ -81,6 +81,17 @@ export async function getPermissionsByLockerId(
   return permissions;
 }
 
+// Usuários cujas permissões o solicitante pode gerenciar: o professor só
+// alunos e a si mesmo; o admin todos os que enxerga (o root fica oculto).
+function manageableUsersWhere(requester: AuthenticatedUser) {
+  const teacherScope =
+    requester.role === UserRole.TEACHER
+      ? { OR: [{ role: UserRole.STUDENT }, { id: requester.id }] }
+      : {};
+
+  return { AND: [visibleUsersWhere(requester), teacherScope] };
+}
+
 export async function upsertPermissions(
   lockerId: string,
   requesterUser: AuthenticatedUser,
@@ -103,10 +114,6 @@ export async function upsertPermissions(
 
     if (!existingLocker) throw new HttpError("O armário não existe");
 
-    if (requesterUser.role === UserRole.TEACHER) {
-      await validateLockerPermission(lockerId, requesterUser.id);
-    }
-
     const uniquePermissions = [
       ...new Map(
         permissions.map((permission) => [permission.userId, permission]),
@@ -127,21 +134,23 @@ export async function upsertPermissions(
         id: {
           in: uniqueUsersIds,
         },
-        ...visibleUsersWhere(requesterUser),
+        ...manageableUsersWhere(requesterUser),
       },
     });
 
     if (uniqueUsersIds.length !== existingUsers.length)
       throw new HttpError(
-        "Um ou mais usuários informados não existem no sistema",
+        requesterUser.role === UserRole.TEACHER
+          ? "Professores só podem liberar acesso para alunos ou para si mesmos"
+          : "Um ou mais usuários informados não existem no sistema",
       );
 
     // A lista enviada substitui as permissões do armário, mas só entre os
-    // usuários que o solicitante enxerga: o acesso de um root oculto fica.
+    // usuários que o solicitante gerencia: os demais acessos são mantidos.
     await tx.lockerPermission.deleteMany({
       where: {
         lockerId,
-        user: visibleUsersWhere(requesterUser),
+        user: manageableUsersWhere(requesterUser),
       },
     });
 

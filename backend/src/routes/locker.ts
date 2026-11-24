@@ -8,7 +8,11 @@ import { requireLockerAccess, requireRole } from "../middlewares/role-middleware
 export const lockerRouter = Router();
 
 lockerRouter
-  .get("/", requireRole(UserRole.ADMIN), LockerController.getLockers)
+  .get(
+    "/",
+    requireRole(UserRole.ADMIN, UserRole.TEACHER),
+    LockerController.getLockers,
+  )
   .get(
     "/:id",
     requireLockerAccess("id", UserRole.ADMIN, UserRole.TEACHER),

@@ -5,7 +5,6 @@ import { Event, EventSeverity, Prisma } from "../generated/prisma/client";
 import {
   LOCKER_PERMISSIONS_GRANTED_EVENT,
   LOCKER_PERMISSIONS_REVOKED_EVENT,
-  EVENTS_DELETED_EVENT,
 } from "../constants";
 
 export interface GetEventsFiltersDTO {
@@ -109,29 +108,16 @@ export async function getEvents(
   return describePermissionEvents(events, requester);
 }
 
-// Apaga os eventos que batem com os filtros e registra quem apagou,
-// para a limpeza do histórico também ficar no histórico.
+// Apaga os eventos que batem com os filtros (os mesmos da listagem).
 export async function deleteEvents(
   filters: GetEventsFiltersDTO,
   requester: AuthenticatedUser,
 ): Promise<number> {
-  return prisma.$transaction(async (tx) => {
-    const { count } = await tx.event.deleteMany({
-      where: buildEventsWhere(filters, requester),
-    });
-
-    await tx.event.create({
-      data: {
-        userId: requester.id,
-        type: EVENTS_DELETED_EVENT,
-        severity: EventSeverity.WARNING,
-        message: `${count} evento(s) apagado(s) do histórico.`,
-        metadata: JSON.stringify(filters),
-      },
-    });
-
-    return count;
+  const { count } = await prisma.event.deleteMany({
+    where: buildEventsWhere(filters, requester),
   });
+
+  return count;
 }
 
 export async function getEventById(
